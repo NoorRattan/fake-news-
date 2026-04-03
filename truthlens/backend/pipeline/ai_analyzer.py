@@ -1,9 +1,9 @@
 import os
 import json
 import re
+import requests
 from google import genai
 from google.genai import types
-from groq import Groq
 from utils.logger import logger
 
 SYSTEM_PROMPT = """You are TruthLens, an expert AI analyst specializing in misinformation detection, media literacy, and fact-checking. Your task is to analyze the provided content and return a structured credibility assessment.
@@ -93,6 +93,18 @@ def parse_ai_response(raw_text: str) -> dict:
                 
     if parsed_dict is None:
         raise ValueError(f"Could not parse AI response as JSON: {cleaned_text[:200]}")
+
+    # key_claims must have at least 1 item - generate a fallback if AI returned empty
+    key_claims = parsed_dict.get("key_claims", [])
+    if not isinstance(key_claims, list):
+        key_claims = []
+    key_claims = [c for c in key_claims if isinstance(c, str) and c.strip()]
+    if not key_claims:
+        summary = parsed_dict.get("summary", "")
+        if summary:
+            key_claims = [summary[:120].strip()]
+        else:
+            key_claims = ["Claim could not be extracted from this content"]
         
     result = {
         "verdict": parsed_dict.get("verdict", "Unverifiable"),
@@ -102,7 +114,7 @@ def parse_ai_response(raw_text: str) -> dict:
         "red_flags": parsed_dict.get("red_flags", []),
         "credible_signals": parsed_dict.get("credible_signals", []),
         "manipulation_tactics": parsed_dict.get("manipulation_tactics", []),
-        "key_claims": parsed_dict.get("key_claims", []),
+        "key_claims": key_claims,
         "reasoning": parsed_dict.get("reasoning", ""),
         "advice": parsed_dict.get("advice", "")
     }
@@ -143,7 +155,7 @@ def analyze_with_gemini(user_prompt: str) -> dict:
             max_output_tokens=2048
         )
         response = client.models.generate_content(
-            model="gemini-1.5-flash",
+            model="gemini-2.0-flash",
             contents=user_prompt,
             config=config
         )
@@ -160,18 +172,26 @@ def analyze_with_groq(user_prompt: str) -> dict:
         raise ValueError("GROQ_API_KEY not set")
         
     try:
-        client = Groq(api_key=groq_api_key)
-        messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_prompt}
-        ]
-        response = client.chat.completions.create(
-            model="llama-3.1-70b-versatile",
-            messages=messages,
-            temperature=0.2,
-            max_tokens=2048
+        response = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {groq_api_key}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "llama-3.1-8b-instant",
+                "messages": [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": user_prompt}
+                ],
+                "temperature": 0.2,
+                "max_tokens": 2048
+            },
+            timeout=45
         )
-        result = parse_ai_response(response.choices[0].message.content)
+        response.raise_for_status()
+        response_data = response.json()
+        result = parse_ai_response(response_data["choices"][0]["message"]["content"])
         logger.info(f"Groq analysis complete. Verdict: {result['verdict']}, Score: {result['credibility_score']}")
         return result
     except Exception as e:
@@ -197,7 +217,7 @@ def analyze_content(content: str, input_type: str, domain_info: str = "Unknown",
                "red_flags": [],
                "credible_signals": [],
                "manipulation_tactics": [],
-               "key_claims": [],
+               "key_claims": ["Claim could not be extracted from this content"],
                "reasoning": "Both AI analysis providers returned errors. This is a temporary service issue.",
                "advice": "Please try again in a few minutes."
            }

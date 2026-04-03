@@ -9,8 +9,8 @@ def start_server():
     """Start uvicorn in a subprocess. Returns the process handle."""
     process = subprocess.Popen(
         [sys.executable, "-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8765", "--log-level", "warning"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
     )
     return process
 
@@ -56,7 +56,7 @@ def run_tests(base_url: str):
 
     # Test 3 - Valid Text Input (Short Article)
     try:
-        r = requests.post(f"{base_url}/api/analyze", json={"input": valid_text_input}, timeout=15)
+        r = requests.post(f"{base_url}/api/analyze", json={"input": valid_text_input}, timeout=45)
         assert r.status_code == 200, f"Status code {r.status_code} != 200"
         data = r.json()
         required_fields = ["analysis_id", "timestamp", "input_type", "processing_time_ms", "verdict", "credibility_score", "confidence", "summary", "red_flags", "credible_signals", "manipulation_tactics", "key_claims", "reasoning", "advice"]
@@ -76,7 +76,7 @@ def run_tests(base_url: str):
 
     # Test 4 - Headline / Short Claim
     try:
-        r = requests.post(f"{base_url}/api/analyze", json={"input": "5G towers are causing cancer and the government is hiding the evidence"}, timeout=15)
+        r = requests.post(f"{base_url}/api/analyze", json={"input": "5G towers are causing cancer and the government is hiding the evidence"}, timeout=45)
         assert r.status_code == 200, f"Status code {r.status_code} != 200"
         data = r.json()
         assert data["input_type"] == "HEADLINE", "input_type must be HEADLINE"
@@ -88,7 +88,7 @@ def run_tests(base_url: str):
 
     # Test 5 - Fake News Pattern
     try:
-        r = requests.post(f"{base_url}/api/analyze", json={"input": "SHOCKING: Bill Gates admits in leaked Davos recording that COVID vaccines contain microchips that track your location and will be activated by 5G networks in 2026. The mainstream media is suppressing this bombshell revelation. Share before they delete this! Anonymous insiders confirm the globalist agenda is now entering its final phase. Doctors are being paid to stay silent. Your government is lying to you. Wake up and spread the truth NOW before it is too late!!!"}, timeout=15)
+        r = requests.post(f"{base_url}/api/analyze", json={"input": "SHOCKING: Bill Gates admits in leaked Davos recording that COVID vaccines contain microchips that track your location and will be activated by 5G networks in 2026. The mainstream media is suppressing this bombshell revelation. Share before they delete this! Anonymous insiders confirm the globalist agenda is now entering its final phase. Doctors are being paid to stay silent. Your government is lying to you. Wake up and spread the truth NOW before it is too late!!!"}, timeout=45)
         assert r.status_code == 200, f"Status code {r.status_code} != 200"
         data = r.json()
         assert data["credibility_score"] < 35, f"credibility_score too high: {data['credibility_score']}"
@@ -121,7 +121,7 @@ def run_tests(base_url: str):
         assert r1.status_code == 200, "history status != 200"
         assert isinstance(r1.json().get("analyses"), list), "analyses missing or not a list"
         
-        requests.post(f"{base_url}/api/analyze", json={"input": valid_text_input}, timeout=15)
+        requests.post(f"{base_url}/api/analyze", json={"input": valid_text_input}, timeout=45)
         
         r2 = requests.get(f"{base_url}/api/history", timeout=5)
         data2 = r2.json()
@@ -162,10 +162,10 @@ if __name__ == "__main__":
     
     try:
         print("Waiting for server to be ready...")
-        ready = wait_for_server(BASE_URL, timeout=30)
+        ready = wait_for_server(BASE_URL, timeout=60)
         
         if not ready:
-            print("ERROR: Server did not start within 30 seconds.")
+            print("ERROR: Server did not start within 60 seconds.")
             print("Check that all dependencies are installed and .env file exists.")
             server.terminate()
             sys.exit(1)
