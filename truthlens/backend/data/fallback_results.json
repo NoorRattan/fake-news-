@@ -1,0 +1,131 @@
+[
+  {
+    "analysis_id": "fallback-001",
+    "timestamp": "2026-04-04T12:00:00+00:00",
+    "input_type": "ARTICLE_TEXT",
+    "processing_time_ms": 3847,
+    "verdict": "Likely Fake",
+    "credibility_score": 8,
+    "confidence": "High",
+    "summary": "This content claims that COVID-19 vaccines contain microchips designed to track individuals and permanently alter human DNA through 5G networks, citing anonymous informants.",
+    "red_flags": [
+      "No peer-reviewed sources cited",
+      "Contradicts established medical consensus",
+      "Anonymous sources only",
+      "Emotional/sensational headline",
+      "Implausible claim"
+    ],
+    "credible_signals": [],
+    "manipulation_tactics": [
+      "Appeal to Fear",
+      "Conspiracy Framing",
+      "False Urgency"
+    ],
+    "key_claims": [
+      "Vaccines alter human DNA using 5G",
+      "Pfizer documents leak a 98% vaccine collapse rate",
+      "Media is suppressing whistleblowers"
+    ],
+    "reasoning": "This text exhibits classic hallmarks of medical disinformation and internet conspiracy theories. It relies entirely on anonymous 'whistleblowers' and lacks any verifiable, peer-reviewed evidence. The assertion that vaccines contain microchips activated by 5G directly contradicts established global scientific and medical consensus. The language heavily utilizes emotional manipulation and manufactured urgency typical of known disinformation campaigns.",
+    "advice": "Verify medical claims through trusted health authorities like the CDC or WHO. Avoid sharing content that uses fear-based language or anonymous rumors.",
+    "domain_info": null,
+    "cited_sources": [],
+    "corroboration_results": [],
+    "article_metadata": null
+  },
+  {
+    "analysis_id": "fallback-002",
+    "timestamp": "2026-04-04T12:00:00+00:00",
+    "input_type": "ARTICLE_TEXT",
+    "processing_time_ms": 3210,
+    "verdict": "Likely Real",
+    "credibility_score": 91,
+    "confidence": "High",
+    "summary": "This article details findings from a major UN climate assessment, reporting that global average temperatures have increased by 1.1 degrees Celsius compared to pre-industrial levels.",
+    "red_flags": [],
+    "credible_signals": [
+      "Named expert sources",
+      "Peer-reviewed study cited",
+      "Neutral measured tone",
+      "Verifiable statistics with sources",
+      "Author identified",
+      "Consistent with mainstream reporting"
+    ],
+    "manipulation_tactics": [],
+    "key_claims": [
+      "Global average temperatures rose 1.1 degrees",
+      "Temperatures could rise 2.5 to 4 degrees by 2100",
+      "Report uses 14,000 peer-reviewed studies"
+    ],
+    "reasoning": "This report strongly adheres to high journalistic standards by referencing a verifiable, prominent institutional source (the IPCC). The text provides precise, statistically grounded claims directly tied to the cited academic consensus involving hundreds of named researchers. The reporting maintains a neutral tone without dramatization and accurately reflects the broadly accepted reality of the current climate science domain.",
+    "advice": "This information appears solid and corroborated by global organizations. It remains a reliable baseline for understanding current climate dynamics.",
+    "domain_info": null,
+    "cited_sources": [],
+    "corroboration_results": [],
+    "article_metadata": null
+  },
+  {
+    "analysis_id": "fallback-003",
+    "timestamp": "2026-04-04T12:00:00+00:00",
+    "input_type": "ARTICLE_TEXT",
+    "processing_time_ms": 4150,
+    "verdict": "Misleading",
+    "credibility_score": 44,
+    "confidence": "High",
+    "summary": "This text asserts the economy is collapsing by citing a weekly increase in unemployment claims to 215,000, arguing it proves widespread policy failure.",
+    "red_flags": [
+      "Misleading headline vs content",
+      "Missing context",
+      "Cherry-Picking data points",
+      "Loaded language"
+    ],
+    "credible_signals": [
+      "Verifiable statistics with sources"
+    ],
+    "manipulation_tactics": [
+      "Cherry-Picking",
+      "False Equivalence"
+    ],
+    "key_claims": [
+      "Unemployment claims rose by 12,000",
+      "Total claims reached 215,000 last week"
+    ],
+    "reasoning": "While the underlying statistic (215,000 claims) may be technically accurate based on recent labor reports, the framing is highly distorted. This constitutes 'cherry-picking': taking a single week's minor fluctuation and using catastrophic language ('freefall', 'dying') to inaccurately portray an otherwise standard historical baseline. The narrative intent heavily outweighs the raw data to drive a partisan agenda without offering the broader economic context.",
+    "advice": "Look up the original raw data source (e.g., the Bureau of Labor Statistics) to see the long-term historical trend, rather than reacting to a single-week localized bump presented dramatically.",
+    "domain_info": null,
+    "cited_sources": [],
+    "corroboration_results": [],
+    "article_metadata": null
+  },
+  {
+    "analysis_id": "fallback-004",
+    "timestamp": "2026-04-04T12:00:00+00:00",
+    "input_type": "HEADLINE",
+    "processing_time_ms": 2890,
+    "verdict": "Unverifiable",
+    "credibility_score": 48,
+    "confidence": "High",
+    "summary": "The claim alleges that 5G cellular communication towers are directly responsible for causing cancer, and that governments are concealing safety evidence.",
+    "red_flags": [
+      "Anonymous sources only",
+      "No publication date",
+      "No corroborating coverage",
+      "No sources cited"
+    ],
+    "credible_signals": [],
+    "manipulation_tactics": [
+      "Conspiracy Framing",
+      "Appeal to Fear"
+    ],
+    "key_claims": [
+      "5G towers cause cancer",
+      "Governments are involved in a cover-up"
+    ],
+    "reasoning": "This short claim contains no verifiable particulars, methodologies, or primary named sources. It leans heavily on broad conspiracy-style assertions rather than falsifiable data. While it avoids explicit falsifiable mechanics, there is a total lack of institutional affiliation or detailed context. As a result, assessing the exact factual basis from the text alone is impossible without introducing massive external extrapolation.",
+    "advice": "Wait for credible reporting and scientific investigations from recognizable health regulatory authorities before forming or sharing an opinion.",
+    "domain_info": null,
+    "cited_sources": [],
+    "corroboration_results": [],
+    "article_metadata": null
+  }
+]
