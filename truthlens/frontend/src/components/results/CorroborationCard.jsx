@@ -70,7 +70,7 @@ export default function CorroborationCard({ corroboration_results }) {
                         <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', color: '#666666', marginTop: '6px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                           {res.snippet}
                         </div>
-                        <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '9px', color: '#444444', marginTop: '8px', border: '1px solid #333333', padding: '2px 6px', display: 'inline-block' }}>
+                        <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '9px', color: '#444444', marginTop: '8px', border: '1px solid #222222', padding: '2px 6px', display: 'inline-block', borderRadius: 0 }}>
                           {extractDomain(res.url)}
                         </div>
                       </div>

@@ -1,3 +1,5 @@
+from typing import Optional
+
 class AnalysisCache:
     def __init__(self):
         self._storage = []
@@ -10,7 +12,7 @@ class AnalysisCache:
     def get_all(self) -> list:
         return list(reversed(self._storage))
 
-    def get_by_id(self, analysis_id: str) -> dict | None:
+    def get_by_id(self, analysis_id: str) -> Optional[dict]:
         for item in self._storage:
             if item.get("analysis_id") == analysis_id:
                 return item

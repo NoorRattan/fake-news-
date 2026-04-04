@@ -39,16 +39,16 @@ export default function SummaryCard({ summary, domain_info, article_metadata }) 
 
         {domain_info?.domain && (
           <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <span style={{ border: '1px solid #333333', padding: '2px 8px', fontFamily: '"DM Mono", monospace', fontSize: '9px', borderRadius: 0, color: '#f0ede8' }}>
+            <span style={{ border: '1px solid #222222', padding: '2px 8px', fontFamily: '"DM Mono", monospace', fontSize: '9px', borderRadius: 0, color: '#f0ede8' }}>
               {domain_info.domain}
             </span>
             {domain_info.rating && (
-              <span style={{ border: '1px solid #333333', padding: '2px 8px', fontFamily: '"DM Mono", monospace', fontSize: '9px', borderRadius: 0, color: '#666666' }}>
+              <span style={{ border: '1px solid #222222', padding: '2px 8px', fontFamily: '"DM Mono", monospace', fontSize: '9px', borderRadius: 0, color: '#666666' }}>
                 {domain_info.rating}
               </span>
             )}
             {domain_info.bias && (
-              <span style={{ border: '1px solid #333333', padding: '2px 8px', fontFamily: '"DM Mono", monospace', fontSize: '9px', borderRadius: 0, color: '#666666' }}>
+              <span style={{ border: '1px solid #222222', padding: '2px 8px', fontFamily: '"DM Mono", monospace', fontSize: '9px', borderRadius: 0, color: '#666666' }}>
                 {domain_info.bias} Bias
               </span>
             )}

@@ -58,7 +58,7 @@ export default function VerdictBanner({ result }) {
           </div>
 
           <div style={{ display: 'flex', gap: '16px', marginTop: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ border: '1px solid #333333', color: '#666666', fontFamily: '"DM Mono", monospace', fontSize: '9px', padding: '3px 8px', borderRadius: 0, textTransform: 'uppercase' }}>
+            <span style={{ border: '1px solid #222222', color: '#666666', fontFamily: '"DM Mono", monospace', fontSize: '9px', padding: '3px 8px', borderRadius: 0, textTransform: 'uppercase' }}>
               {result?.metadata?.input_type || 'URL'}
             </span>
             <span style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', color: '#666666' }}>
@@ -75,8 +75,8 @@ export default function VerdictBanner({ result }) {
           <div style={{ fontFamily: '"Bebas Neue", sans-serif', color: vColor, lineHeight: 1 }} className="text-[56px] md:text-[80px]">
             <motion.span className="score-display">{rounded}</motion.span>
           </div>
-          <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '14px', color: '#666666' }}>
-            / 100
+          <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '9px', color: '#444444', marginTop: '8px', border: '1px solid #222222', padding: '2px 6px', display: 'inline-block', borderRadius: 0 }}>
+            CREDIBILITY SCORE
           </div>
 
           <div style={{ width: '100%', height: '4px', background: '#222222', borderRadius: 0, overflow: 'hidden', marginTop: '12px' }}>
