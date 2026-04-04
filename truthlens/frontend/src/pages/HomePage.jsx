@@ -59,8 +59,6 @@ const SAMPLE_MISLEADING = {
 
 const EXAMPLE_FAKE_TXT = "URGENT!!! Scientists BANNED from telling you this secret — Big Pharma doesn't want you to know that drinking bleach mixed with apple cider vinegar CURES all diseases including cancer!! Share before they delete this!! The government is hiding the TRUTH about natural cures that work 100% of the time with NO side effects!!! SHARE IMMEDIATELY before this post gets deleted by the deep state operatives!! Forward to everyone you know!!!"
 
-const EXAMPLE_REAL_TXT = "A comprehensive peer-reviewed study published in the journal Nature Medicine, involving 8,200 participants across 22 countries, has confirmed that regular moderate exercise reduces the risk of cardiovascular disease by 35 percent. The 10-year longitudinal research, led by Dr. Priya Sharma at Stanford Medical School, was funded by the National Institutes of Health and has been independently replicated by researchers in Germany and South Korea."
-
 const STAGE_LABELS = {
   idle:          'PREPARING ANALYSIS...',
   fetching_url:  'FETCHING ARTICLE FROM URL...',
@@ -71,6 +69,297 @@ const STAGE_LABELS = {
 
 const STAGE_STEPS = ['INPUT', 'EXTRACT', 'ANALYZE', 'SEARCH', 'VERDICT']
 const STAGE_INDEX = { idle: 0, fetching_url: 1, analyzing: 2, corroborating: 3, finalizing: 4 }
+
+// SUB-COMPONENTS (MOVED OUTSIDE) ───────────────────────────
+
+const PageHeader = () => (
+  <motion.div
+    initial={{ opacity: 0, y: -10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4 }}
+    style={{
+      borderBottom: '1px solid #222222',
+      padding: '24px 0',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    }}
+  >
+    <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 42, letterSpacing: 3 }}>
+      <span style={{ color: '#f0ede8' }}>TRUTH</span>
+      <span style={{ color: '#47ff8f' }}>LENS</span>
+    </div>
+    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: '#666666', letterSpacing: 1, textTransform: 'uppercase' }}>
+      See Through the Noise
+    </div>
+  </motion.div>
+)
+
+const InputView = ({ 
+  textValue, setTextValue, urlValue, setUrlValue, 
+  urlError, setUrlError, handleSubmit, isLoading, 
+  submitError, error 
+}) => {
+  const onFormSubmit = (e) => {
+    e.preventDefault();
+    handleSubmit();
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      style={{ paddingTop: 32, paddingBottom: 24 }}
+    >
+      <form onSubmit={onFormSubmit}>
+        <div style={{ fontFamily: "'DM Mono'", fontSize: 10, color: '#666666', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>
+          PASTE ARTICLE / URL / CLAIM
+        </div>
+
+        <textarea
+          value={textValue}
+          onChange={(e) => {
+            const val = e.target.value
+            if (val.length <= 50000) {
+              setTextValue(val)
+            } else {
+              setTextValue(val.slice(0, 50000))
+              toast('Truncated to 50,000 characters', { icon: '✂️' })
+            }
+          }}
+          placeholder="Paste any news article, social media post, or claim here..."
+          style={{
+            width: '100%',
+            minHeight: 120,
+            maxHeight: 300,
+            resize: 'vertical',
+            background: '#141414',
+            border: '1px solid #222222',
+            borderRadius: 0,
+            color: '#f0ede8',
+            fontFamily: "'DM Mono', monospace",
+            fontSize: 13,
+            lineHeight: 1.7,
+            padding: 16,
+            outline: 'none',
+            boxSizing: 'border-box',
+            transition: 'border-color 0.15s ease',
+            display: 'block',
+          }}
+          onFocus={(e) => { e.target.style.borderColor = '#444444' }}
+          onBlur={(e) => { e.target.style.borderColor = '#222222' }}
+        />
+
+        <div style={{ borderTop: '1px solid #222222', margin: '20px 0' }} />
+
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }} className="url-row-flex">
+          <div style={{ flex: 1 }}>
+            <input
+              type="text"
+              value={urlValue}
+              onChange={(e) => { setUrlValue(e.target.value); setUrlError('') }}
+              placeholder="Or enter a URL — https://..."
+              style={{
+                width: '100%',
+                height: 44,
+                background: '#141414',
+                border: `1px solid ${urlError ? '#ff4747' : '#222222'}`,
+                borderRadius: 0,
+                color: '#f0ede8',
+                fontFamily: "'DM Mono'",
+                fontSize: 12,
+                padding: '0 14px',
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'border-color 0.15s ease',
+              }}
+              onFocus={(e) => { if (!urlError) e.target.style.borderColor = '#444444' }}
+              onBlur={(e) => { if (!urlError) e.target.style.borderColor = '#222222' }}
+            />
+            {urlError && (
+              <div style={{ fontFamily: "'DM Mono'", fontSize: 10, color: '#ff4747', marginTop: 5 }}>
+                {urlError}
+              </div>
+            )}
+          </div>
+
+          <motion.button
+            type="submit"
+            disabled={isLoading}
+            whileHover={!isLoading ? { backgroundColor: '#47ff8f' } : {}}
+            whileTap={!isLoading ? { scale: 0.98 } : {}}
+            style={{
+              height: 44,
+              padding: '0 28px',
+              background: isLoading ? '#333333' : '#f0ede8',
+              color: '#0d0d0d',
+              border: 'none',
+              borderRadius: 0,
+              fontFamily: "'Bebas Neue'",
+              fontSize: 18,
+              letterSpacing: 2,
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+              transition: 'background 0.15s ease',
+            }}
+          >
+            {isLoading ? 'ANALYZING...' : 'ANALYZE'}
+          </motion.button>
+        </div>
+      </form>
+
+      {submitError && (
+        <div style={{ fontFamily: "'DM Mono'", fontSize: 11, color: '#ff4747', marginTop: 8 }}>
+          {submitError}
+        </div>
+      )}
+
+      {error && (
+        <div style={{ marginTop: 20, borderLeft: '3px solid #ff4747', padding: '12px 16px', background: 'rgba(255,71,71,0.06)' }}>
+          <div style={{ fontFamily: "'DM Mono'", fontSize: 12, color: '#ff4747' }}>{error}</div>
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+const LoadingView = ({ loadingStage }) => {
+  const activeIndex = STAGE_INDEX[loadingStage] ?? 0
+
+  return (
+    <motion.div
+      key="loading"
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: 'auto' }}
+      exit={{ opacity: 0, height: 0 }}
+      style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
+        gap: 32, padding: '40px 0', borderTop: '1px solid #222222',
+      }}
+    >
+      <LoadingOrb />
+      <div style={{ fontFamily: "'Bebas Neue'", fontSize: 28, letterSpacing: 3, color: '#f0ede8' }}>
+        {STAGE_LABELS[loadingStage] || 'PROCESSING...'}
+      </div>
+      <div style={{ display: 'flex', width: '100%', maxWidth: 400 }}>
+        {STAGE_STEPS.map((label, i) => (
+          <div key={label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{
+              width: 10, height: 10, background: i < activeIndex ? '#47ff8f' : i === activeIndex ? '#f0ede8' : '#333333',
+              animation: i === activeIndex ? 'step-pulse-ring 1.5s infinite' : 'none'
+            }} />
+            <div style={{ fontFamily: "'DM Mono'", fontSize: 8, color: i <= activeIndex ? '#f0ede8' : '#333333', marginTop: 8 }}>{label}</div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
+const ResultsDashboard = ({ res, isSample = false, handleNewAnalysis }) => {
+  if (!res) return null
+  const verdictColor = getVerdictColor(res.verdict)
+  
+  // Score Animation
+  const count = useMotionValue(0)
+  const rounded = useTransform(count, v => Math.round(v))
+  useEffect(() => { count.set(0); animate(count, res.credibility_score || 0, { duration: 1.2 }) }, [res])
+
+  return (
+    <div style={{ paddingBottom: 80 }}>
+      {/* ACTION BAR */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', borderBottom: '1px solid #222222' }}>
+        <div style={{ 
+          fontFamily: "'DM Mono'", 
+          fontSize: 16, 
+          color: isSample ? '#ff9147' : '#47ff8f', 
+          textTransform: 'uppercase', 
+          letterSpacing: 2,
+          background: isSample ? 'rgba(255,145,71,0.08)' : 'rgba(71,255,143,0.08)',
+          padding: '10px 20px',
+          border: `1px solid ${isSample ? 'rgba(255,145,71,0.3)' : 'rgba(71,255,143,0.3)'}`,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 10,
+          fontWeight: 700
+        }}>
+          {isSample ? '✦ GUIDED EXAMPLE' : '✦ LIVE ANALYSIS RESULT'}
+        </div>
+        {!isSample && (
+          <button
+             onClick={handleNewAnalysis}
+             style={{ background: 'none', border: 'none', color: '#666666', fontFamily: "'DM Mono'", fontSize: 10, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: 1 }}
+          >
+            [ CLEAR RESULT ]
+          </button>
+        )}
+      </div>
+
+      {/* VERDICT BANNER */}
+      <motion.div
+         initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+         style={{ background: '#141414', borderLeft: `5px solid ${verdictColor}`, padding: '24px 28px', marginTop: 24 }}
+      >
+        <div style={{ fontFamily: "'Bebas Neue'", fontSize: 64, color: verdictColor, letterSpacing: 2, lineHeight: 1 }}>
+          {(res.verdict || '').toUpperCase()}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 20 }}>
+          <div style={{ flex: 1, height: 4, background: '#222222' }}>
+            <motion.div initial={{ width: 0 }} animate={{ width: `${res.credibility_score}%` }} transition={{ duration: 1 }} style={{ height: '100%', background: verdictColor }} />
+          </div>
+          <div style={{ fontFamily: "'DM Mono'", fontSize: 14, color: verdictColor }}>
+            <motion.span>{rounded}</motion.span> / 100
+          </div>
+          <div style={{ border: `1px solid ${verdictColor}`, color: verdictColor, padding: '3px 10px', fontSize: 10, fontFamily: "'DM Mono'" }}>
+            {res.confidence} CONFIDENCE
+          </div>
+        </div>
+      </motion.div>
+
+      {/* WHAT THIS CLAIMS */}
+      <div style={{ background: '#141414', border: '1px solid #222222', padding: '20px 24px', marginTop: 16 }}>
+        <div className="label-editorial" style={{ marginBottom: 12 }}>WHAT THIS CLAIMS</div>
+        <div style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontSize: 16, lineHeight: 1.8, color: '#f0ede8' }}>
+          {res.summary}
+        </div>
+      </div>
+
+      {/* FLAGS & TACTICS */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }} className="editorial-grid">
+        <div style={{ background: '#141414', border: '1px solid #222222', padding: '20px 24px' }}>
+          <div className="label-editorial" style={{ marginBottom: 14 }}>{res.verdict === 'Likely Real' ? 'CREDIBLE SIGNALS' : 'RED FLAGS'}</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {res.verdict === 'Likely Real' 
+              ? (res.credible_signals?.map((s, i) => <div key={i} className="tag-editorial tag-green">{s}</div>) || <div style={{ color: '#444' }}>-</div>)
+              : (res.red_flags?.map((f, i) => <div key={i} className="tag-editorial tag-red">{f}</div>) || <div style={{ color: '#444' }}>-</div>)
+            }
+            {res.verdict === 'Likely Real' && res.red_flags?.length === 0 && <div className="tag-editorial tag-outline">NO RED FLAGS DETECTED</div>}
+          </div>
+        </div>
+        <div style={{ background: '#141414', border: '1px solid #222222', padding: '20px 24px' }}>
+          <div className="label-editorial" style={{ marginBottom: 14 }}>MANIPULATION TACTICS</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {res.manipulation_tactics?.length > 0 
+              ? res.manipulation_tactics.map((t, i) => <div key={i} className="tag-editorial tag-amber">{t}</div>)
+              : <div className="tag-editorial tag-outline">NONE DETECTED</div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div style={{ background: '#141414', border: '1px solid #222222', padding: '20px 24px', marginTop: 16 }}>
+        <div className="label-editorial" style={{ marginBottom: 12 }}>WHY THIS VERDICT?</div>
+        <div style={{ fontFamily: "'DM Mono'", fontSize: 13, lineHeight: 2, color: '#f0ede8' }}>{res.reasoning}</div>
+      </div>
+
+      <div style={{ background: '#141414', border: '1px solid #222222', padding: '20px 24px', marginTop: 16 }}>
+        <div className="label-editorial" style={{ marginBottom: 12 }}>WHAT SHOULD YOU DO?</div>
+        <div style={{ fontFamily: "'DM Mono'", fontSize: 13, lineHeight: 2, color: '#f0ede8' }}>{res.advice}</div>
+      </div>
+    </div>
+  )
+}
 
 export default function HomePage() {
   const [view, setView] = useState('input')
@@ -137,45 +426,6 @@ export default function HomePage() {
     analyzeContent(inputToSend)
   }, [urlValue, textValue, analyzeContent])
 
-  const handleExampleTxt = useCallback((text) => {
-    setTextValue(text)
-    setUrlValue('')
-    setSubmitError('')
-    setUrlError('')
-  }, [])
-
-  const handleCopy = useCallback(async (res) => {
-    if (!res) return
-    const text = [
-      'TruthLens Analysis',
-      '='.repeat(40),
-      `Verdict: ${res.verdict}`,
-      `Credibility Score: ${res.credibility_score}/100`,
-      `Confidence: ${res.confidence}`,
-      '',
-      'Summary:',
-      res.summary || 'N/A',
-      '',
-      `Red Flags: ${res.red_flags?.join(', ') || 'None'}`,
-      `Manipulation Tactics: ${res.manipulation_tactics?.join(', ') || 'None'}`,
-      '',
-      'Reasoning:',
-      res.reasoning || 'N/A',
-      '',
-      'Advice:',
-      res.advice || 'N/A',
-      '',
-      `Analyzed: ${formatTimestamp(res.timestamp)}`,
-    ].join('\n')
-
-    try {
-      await navigator.clipboard.writeText(text)
-      toast.success('Copied to clipboard!')
-    } catch {
-      toast.error('Could not copy to clipboard.')
-    }
-  }, [])
-
   const handleNewAnalysis = useCallback(() => {
     clearResult()
     setView('input')
@@ -186,286 +436,6 @@ export default function HomePage() {
     setUrlError('')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [clearResult])
-
-  // SUB-COMPONENTS ───────────────────────────────────────────
-
-  const PageHeader = () => (
-    <motion.div
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      style={{
-        borderBottom: '1px solid #222222',
-        padding: '24px 0',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}
-    >
-      <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 42, letterSpacing: 3 }}>
-        <span style={{ color: '#f0ede8' }}>TRUTH</span>
-        <span style={{ color: '#47ff8f' }}>LENS</span>
-      </div>
-      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: '#666666', letterSpacing: 1, textTransform: 'uppercase' }}>
-        See Through the Noise
-      </div>
-    </motion.div>
-  )
-
-  const InputView = () => (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      style={{ paddingTop: 32, paddingBottom: 24 }}
-    >
-      <div style={{ fontFamily: "'DM Mono'", fontSize: 10, color: '#666666', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>
-        PASTE ARTICLE / URL / CLAIM
-      </div>
-
-      <textarea
-        value={textValue}
-        onChange={(e) => {
-          const val = e.target.value
-          if (val.length <= 50000) {
-            setTextValue(val)
-          } else {
-            setTextValue(val.slice(0, 50000))
-            toast('Truncated to 50,000 characters', { icon: '✂️' })
-          }
-        }}
-        placeholder="Paste any news article, social media post, or claim here..."
-        style={{
-          width: '100%',
-          minHeight: 120,
-          maxHeight: 300,
-          resize: 'vertical',
-          background: '#141414',
-          border: '1px solid #222222',
-          borderRadius: 0,
-          color: '#f0ede8',
-          fontFamily: "'DM Mono', monospace",
-          fontSize: 13,
-          lineHeight: 1.7,
-          padding: 16,
-          outline: 'none',
-          boxSizing: 'border-box',
-          transition: 'border-color 0.15s ease',
-          display: 'block',
-        }}
-        onFocus={(e) => { e.target.style.borderColor = '#444444' }}
-        onBlur={(e) => { e.target.style.borderColor = '#222222' }}
-      />
-
-      <div style={{ borderTop: '1px solid #222222', margin: '20px 0' }} />
-
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }} className="url-row-flex">
-        <div style={{ flex: 1 }}>
-          <input
-            type="text"
-            value={urlValue}
-            onChange={(e) => { setUrlValue(e.target.value); setUrlError('') }}
-            placeholder="Or enter a URL — https://..."
-            style={{
-              width: '100%',
-              height: 44,
-              background: '#141414',
-              border: `1px solid ${urlError ? '#ff4747' : '#222222'}`,
-              borderRadius: 0,
-              color: '#f0ede8',
-              fontFamily: "'DM Mono'",
-              fontSize: 12,
-              padding: '0 14px',
-              outline: 'none',
-              boxSizing: 'border-box',
-              transition: 'border-color 0.15s ease',
-            }}
-            onFocus={(e) => { if (!urlError) e.target.style.borderColor = '#444444' }}
-            onBlur={(e) => { if (!urlError) e.target.style.borderColor = '#222222' }}
-          />
-          {urlError && (
-            <div style={{ fontFamily: "'DM Mono'", fontSize: 10, color: '#ff4747', marginTop: 5 }}>
-              {urlError}
-            </div>
-          )}
-        </div>
-
-        <motion.button
-          onClick={handleSubmit}
-          disabled={isLoading}
-          whileHover={!isLoading ? { backgroundColor: '#47ff8f' } : {}}
-          whileTap={!isLoading ? { scale: 0.98 } : {}}
-          style={{
-            height: 44,
-            padding: '0 28px',
-            background: isLoading ? '#333333' : '#f0ede8',
-            color: '#0d0d0d',
-            border: 'none',
-            borderRadius: 0,
-            fontFamily: "'Bebas Neue'",
-            fontSize: 18,
-            letterSpacing: 2,
-            cursor: isLoading ? 'not-allowed' : 'pointer',
-            whiteSpace: 'nowrap',
-            flexShrink: 0,
-            transition: 'background 0.15s ease',
-          }}
-        >
-          {isLoading ? 'ANALYZING...' : 'ANALYZE'}
-        </motion.button>
-      </div>
-
-      {submitError && (
-        <div style={{ fontFamily: "'DM Mono'", fontSize: 11, color: '#ff4747', marginTop: 8 }}>
-          {submitError}
-        </div>
-      )}
-
-      {error && (
-        <div style={{ marginTop: 20, borderLeft: '3px solid #ff4747', padding: '12px 16px', background: 'rgba(255,71,71,0.06)' }}>
-          <div style={{ fontFamily: "'DM Mono'", fontSize: 12, color: '#ff4747' }}>{error}</div>
-        </div>
-      )}
-    </motion.div>
-  )
-
-  const LoadingView = () => {
-    const activeIndex = STAGE_INDEX[loadingStage] ?? 0
-
-    return (
-      <motion.div
-        key="loading"
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: 1, height: 'auto' }}
-        exit={{ opacity: 0, height: 0 }}
-        style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
-          gap: 32, padding: '40px 0', borderTop: '1px solid #222222',
-        }}
-      >
-        <LoadingOrb />
-        <div style={{ fontFamily: "'Bebas Neue'", fontSize: 28, letterSpacing: 3, color: '#f0ede8' }}>
-          {STAGE_LABELS[loadingStage] || 'PROCESSING...'}
-        </div>
-        <div style={{ display: 'flex', width: '100%', maxWidth: 400 }}>
-          {STAGE_STEPS.map((label, i) => (
-            <div key={label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{
-                width: 10, height: 10, background: i < activeIndex ? '#47ff8f' : i === activeIndex ? '#f0ede8' : '#333333',
-                animation: i === activeIndex ? 'step-pulse-ring 1.5s infinite' : 'none'
-              }} />
-              <div style={{ fontFamily: "'DM Mono'", fontSize: 8, color: i <= activeIndex ? '#f0ede8' : '#333333', marginTop: 8 }}>{label}</div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-    )
-  }
-
-  // RESULTS COMPONENT (DYNAMIC SAMPLES OR LIVE REULT) ─────────────────────────
-
-  const ResultsDashboard = ({ res, isSample = false }) => {
-    if (!res) return null
-    const verdictColor = getVerdictColor(res.verdict)
-    
-    // Score Animation
-    const count = useMotionValue(0)
-    const rounded = useTransform(count, v => Math.round(v))
-    useEffect(() => { count.set(0); animate(count, res.credibility_score || 0, { duration: 1.2 }) }, [res])
-
-    return (
-      <div style={{ paddingBottom: 80 }}>
-        {/* ACTION BAR */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', borderBottom: '1px solid #222222' }}>
-          <div style={{ 
-            fontFamily: "'DM Mono'", 
-            fontSize: 16, 
-            color: isSample ? '#ff9147' : '#47ff8f', 
-            textTransform: 'uppercase', 
-            letterSpacing: 2,
-            background: isSample ? 'rgba(255,145,71,0.08)' : 'rgba(71,255,143,0.08)',
-            padding: '10px 20px',
-            border: `1px solid ${isSample ? 'rgba(255,145,71,0.3)' : 'rgba(71,255,143,0.3)'}`,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 10,
-            fontWeight: 700
-          }}>
-            {isSample ? '✦ GUIDED EXAMPLE' : '✦ LIVE ANALYSIS RESULT'}
-          </div>
-          {!isSample && (
-            <button
-               onClick={handleNewAnalysis}
-               style={{ background: 'none', border: 'none', color: '#666666', fontFamily: "'DM Mono'", fontSize: 10, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: 1 }}
-            >
-              [ CLEAR RESULT ]
-            </button>
-          )}
-        </div>
-
-        {/* VERDICT BANNER */}
-        <motion.div
-           initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-           style={{ background: '#141414', borderLeft: `5px solid ${verdictColor}`, padding: '24px 28px', marginTop: 24 }}
-        >
-          <div style={{ fontFamily: "'Bebas Neue'", fontSize: 64, color: verdictColor, letterSpacing: 2, lineHeight: 1 }}>
-            {(res.verdict || '').toUpperCase()}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 20 }}>
-            <div style={{ flex: 1, height: 4, background: '#222222' }}>
-              <motion.div initial={{ width: 0 }} animate={{ width: `${res.credibility_score}%` }} transition={{ duration: 1 }} style={{ height: '100%', background: verdictColor }} />
-            </div>
-            <div style={{ fontFamily: "'DM Mono'", fontSize: 14, color: verdictColor }}>
-              <motion.span>{rounded}</motion.span> / 100
-            </div>
-            <div style={{ border: `1px solid ${verdictColor}`, color: verdictColor, padding: '3px 10px', fontSize: 10, fontFamily: "'DM Mono'" }}>
-              {res.confidence} CONFIDENCE
-            </div>
-          </div>
-        </motion.div>
-
-        {/* WHAT THIS CLAIMS */}
-        <div style={{ background: '#141414', border: '1px solid #222222', padding: '20px 24px', marginTop: 16 }}>
-          <div className="label-editorial" style={{ marginBottom: 12 }}>WHAT THIS CLAIMS</div>
-          <div style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontSize: 16, lineHeight: 1.8, color: '#f0ede8' }}>
-            {res.summary}
-          </div>
-        </div>
-
-        {/* FLAGS & TACTICS */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }} className="editorial-grid">
-          <div style={{ background: '#141414', border: '1px solid #222222', padding: '20px 24px' }}>
-            <div className="label-editorial" style={{ marginBottom: 14 }}>{res.verdict === 'Likely Real' ? 'CREDIBLE SIGNALS' : 'RED FLAGS'}</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {res.verdict === 'Likely Real' 
-                ? (res.credible_signals?.map((s, i) => <div key={i} className="tag-editorial tag-green">{s}</div>) || <div style={{ color: '#444' }}>-</div>)
-                : (res.red_flags?.map((f, i) => <div key={i} className="tag-editorial tag-red">{f}</div>) || <div style={{ color: '#444' }}>-</div>)
-              }
-              {res.verdict === 'Likely Real' && res.red_flags?.length === 0 && <div className="tag-editorial tag-outline">NO RED FLAGS DETECTED</div>}
-            </div>
-          </div>
-          <div style={{ background: '#141414', border: '1px solid #222222', padding: '20px 24px' }}>
-            <div className="label-editorial" style={{ marginBottom: 14 }}>MANIPULATION TACTICS</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {res.manipulation_tactics?.length > 0 
-                ? res.manipulation_tactics.map((t, i) => <div key={i} className="tag-editorial tag-amber">{t}</div>)
-                : <div className="tag-editorial tag-outline">NONE DETECTED</div>
-              }
-            </div>
-          </div>
-        </div>
-
-        <div style={{ background: '#141414', border: '1px solid #222222', padding: '20px 24px', marginTop: 16 }}>
-          <div className="label-editorial" style={{ marginBottom: 12 }}>WHY THIS VERDICT?</div>
-          <div style={{ fontFamily: "'DM Mono'", fontSize: 13, lineHeight: 2, color: '#f0ede8' }}>{res.reasoning}</div>
-        </div>
-
-        <div style={{ background: '#141414', border: '1px solid #222222', padding: '20px 24px', marginTop: 16 }}>
-          <div className="label-editorial" style={{ marginBottom: 12 }}>WHAT SHOULD YOU DO?</div>
-          <div style={{ fontFamily: "'DM Mono'", fontSize: 13, lineHeight: 2, color: '#f0ede8' }}>{res.advice}</div>
-        </div>
-      </div>
-    )
-  }
 
   // ASSEMBLY ───────────────────────────────────────────────────────────────────
 
@@ -492,7 +462,18 @@ export default function HomePage() {
 
         <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 40px' }} className="editorial-container">
           <PageHeader />
-          <InputView />
+          <InputView 
+            textValue={textValue} 
+            setTextValue={setTextValue} 
+            urlValue={urlValue} 
+            setUrlValue={setUrlValue}
+            urlError={urlError}
+            setUrlError={setUrlError}
+            handleSubmit={handleSubmit}
+            isLoading={isLoading}
+            submitError={submitError}
+            error={error}
+          />
 
           {/* ANALYSIS RESULTS TAB BAR (Guided vs Live) */}
           <div style={{ marginTop: 24, padding: '12px 0 0 0', borderTop: '2px solid #1a1a1a' }}>
@@ -540,17 +521,17 @@ export default function HomePage() {
           </div>
 
           <AnimatePresence mode="wait">
-            {view === 'loading' && <LoadingView key="loading" />}
+            {view === 'loading' && <LoadingView key="loading" loadingStage={loadingStage} />}
             
             {view === 'results' && showSamples && (
               <motion.div key="samples" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <ResultsDashboard res={activeSample} isSample={true} />
+                <ResultsDashboard res={activeSample} isSample={true} handleNewAnalysis={handleNewAnalysis} />
               </motion.div>
             )}
 
             {view === 'results' && !showSamples && currentResult && (
               <motion.div key="live" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <ResultsDashboard res={currentResult} isSample={false} />
+                <ResultsDashboard res={currentResult} isSample={false} handleNewAnalysis={handleNewAnalysis} />
               </motion.div>
             )}
           </AnimatePresence>
