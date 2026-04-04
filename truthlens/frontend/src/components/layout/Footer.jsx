@@ -44,7 +44,7 @@ export default function Footer() {
             <h4 style={{ color: 'var(--muted)', marginBottom: '16px' }}>SYSTEM</h4>
             <div style={{ color: 'var(--muted)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <span>STATUS: ONLINE</span>
-              <span>ENGINE: GEMINI 1.5 PRO</span>
+              <span>ENGINE: GEMINI + GROQ</span>
               <span>PHASE: 2.0 (EDITORIAL)</span>
             </div>
           </div>

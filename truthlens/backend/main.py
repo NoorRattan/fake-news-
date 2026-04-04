@@ -1,23 +1,22 @@
 import os
 from contextlib import asynccontextmanager
+
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
 
-from utils.logger import logger
 from routers.analyze import router as analyze_router
+from utils.logger import logger
 
 load_dotenv()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # ── Startup ───────────────────────────────────────────────
     logger.info("=" * 50)
     logger.info("TruthLens API starting up...")
     logger.info("=" * 50)
 
-    # Check required environment variables
     required_keys = {
         "GEMINI_API_KEY": "Google Gemini AI (primary analysis)",
         "GROQ_API_KEY": "Groq/Llama AI (fallback analysis)",
@@ -28,9 +27,9 @@ async def lifespan(app: FastAPI):
     for key, description in required_keys.items():
         value = os.getenv(key)
         if value and len(value) > 5:
-            logger.info(f"  [OK]      {key} — {description}")
+            logger.info(f"  [OK]      {key} - {description}")
         else:
-            logger.warning(f"  [MISSING] {key} — {description}")
+            logger.warning(f"  [MISSING] {key} - {description}")
             all_keys_present = False
 
     if all_keys_present:
@@ -42,9 +41,8 @@ async def lifespan(app: FastAPI):
     logger.info("API documentation available at: /docs")
     logger.info("=" * 50)
 
-    yield  # Server runs here
+    yield
 
-    # ── Shutdown ──────────────────────────────────────────────
     logger.info("TruthLens API shutting down.")
 
 
@@ -52,14 +50,14 @@ app = FastAPI(
     title="TruthLens API",
     description="AI-powered fake news and misinformation detection",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "")
 if allowed_origins_str:
     allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
 else:
-    allowed_origins = ["*"]  # Development fallback — allow all
+    allowed_origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

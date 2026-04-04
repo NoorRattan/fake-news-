@@ -373,3 +373,56 @@ input[type="text"]:focus {
     border: 1px solid #ccc;
   }
 }
+
+/* Insert below the existing TruthLens HomePage utility classes */
+.backend-status {
+  display: inline-block;
+  font-size: 11px;
+  padding: 6px 12px;
+  margin-top: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.backend-status.starting {
+  color: var(--yellow);
+  border-color: var(--yellow);
+}
+
+.backend-status.offline {
+  color: var(--red);
+  border-color: var(--red);
+}
+
+.processing-time {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.input-type-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 3px 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  border: 1px solid;
+  margin-top: 6px;
+  background: var(--surface);
+}
+
+.input-type-badge.short-claim {
+  color: var(--amber);
+  border-color: var(--amber);
+}
+
+.input-type-badge.url {
+  color: var(--green);
+  border-color: var(--green);
+}

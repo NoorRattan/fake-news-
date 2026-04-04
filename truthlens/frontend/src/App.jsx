@@ -4,7 +4,6 @@ import { useLocation, Routes, Route, Navigate } from 'react-router-dom';
 
 import Layout from './components/layout/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
-import HealthCheck from './components/HealthCheck';
 
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
@@ -15,7 +14,6 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <HealthCheck />
       <Layout>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.key}>

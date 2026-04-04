@@ -1,9 +1,11 @@
-import os
 import json
+import os
 import re
+
 import requests
 from google import genai
 from google.genai import types
+
 from utils.logger import logger
 
 SYSTEM_PROMPT = """You are TruthLens, an expert AI analyst specializing in misinformation detection, media literacy, and fact-checking. Your task is to analyze the provided content and return a structured credibility assessment.
@@ -51,7 +53,13 @@ CREDIBLE SIGNAL EXAMPLES:
 
 Keep all list items concise (under 6 words each). Keep summary under 80 words. Keep reasoning specific to the actual content provided."""
 
-def build_user_prompt(content: str, input_type: str, domain_info: str = "Unknown", domain_rating: str = "Unknown") -> str:
+
+def build_user_prompt(
+    content: str,
+    input_type: str,
+    domain_info: str = "Unknown",
+    domain_rating: str = "Unknown",
+) -> str:
     return f"""Analyze the following content for credibility and misinformation:
 
 [CONTENT TYPE: {input_type}]
@@ -63,6 +71,7 @@ def build_user_prompt(content: str, input_type: str, domain_info: str = "Unknown
 ---
 
 Return your analysis as a JSON object following the exact schema in your instructions."""
+
 
 def build_headline_prompt(content: str) -> str:
     return f"""This is a short claim or headline, not a full article. Analyze it as a factual claim:
@@ -76,36 +85,41 @@ Return your analysis as a JSON object following the exact schema in your instruc
 For the "summary" field, describe what the claim asserts.
 For "key_claims", list the specific verifiable assertions within this claim."""
 
+
 def parse_ai_response(raw_text: str) -> dict:
     cleaned_text = raw_text.strip()
-    cleaned_text = re.sub(r'^```json\s*|^```\s*|```\s*$', '', cleaned_text, flags=re.MULTILINE).strip()
-    
+    cleaned_text = re.sub(
+        r"^```json\s*|^```\s*|```\s*$",
+        "",
+        cleaned_text,
+        flags=re.MULTILINE,
+    ).strip()
+
     parsed_dict = None
     try:
         parsed_dict = json.loads(cleaned_text)
     except Exception:
-        json_match = re.search(r'\{.*\}', cleaned_text, re.DOTALL)
+        json_match = re.search(r"\{.*\}", cleaned_text, re.DOTALL)
         if json_match:
             try:
                 parsed_dict = json.loads(json_match.group(0))
             except Exception:
                 pass
-                
+
     if parsed_dict is None:
         raise ValueError(f"Could not parse AI response as JSON: {cleaned_text[:200]}")
 
-    # key_claims must have at least 1 item - generate a fallback if AI returned empty
     key_claims = parsed_dict.get("key_claims", [])
     if not isinstance(key_claims, list):
         key_claims = []
-    key_claims = [c for c in key_claims if isinstance(c, str) and c.strip()]
+    key_claims = [claim for claim in key_claims if isinstance(claim, str) and claim.strip()]
     if not key_claims:
         summary = parsed_dict.get("summary", "")
         if summary:
             key_claims = [summary[:120].strip()]
         else:
             key_claims = ["Claim could not be extracted from this content"]
-        
+
     result = {
         "verdict": parsed_dict.get("verdict", "Unverifiable"),
         "credibility_score": parsed_dict.get("credibility_score", 50),
@@ -116,108 +130,124 @@ def parse_ai_response(raw_text: str) -> dict:
         "manipulation_tactics": parsed_dict.get("manipulation_tactics", []),
         "key_claims": key_claims,
         "reasoning": parsed_dict.get("reasoning", ""),
-        "advice": parsed_dict.get("advice", "")
+        "advice": parsed_dict.get("advice", ""),
     }
-    
+
     for list_field in ["red_flags", "credible_signals", "manipulation_tactics", "key_claims"]:
         if not isinstance(result[list_field], list):
             result[list_field] = []
-    
+
     for str_field in ["summary", "reasoning", "advice"]:
         if not isinstance(result[str_field], str):
             result[str_field] = str(result[str_field])
-            
+
     try:
         score = int(result["credibility_score"])
         result["credibility_score"] = max(0, min(100, score))
     except (ValueError, TypeError):
         result["credibility_score"] = 50
-        
+
     if result["verdict"] not in ["Likely Real", "Likely Fake", "Misleading", "Mixed", "Unverifiable"]:
         result["verdict"] = "Unverifiable"
-        
+
     if result["confidence"] not in ["High", "Medium", "Low"]:
         result["confidence"] = "Low"
-        
+
     return result
+
 
 def analyze_with_gemini(user_prompt: str) -> dict:
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         raise ValueError("GEMINI_API_KEY not set")
-        
+
     try:
         client = genai.Client(api_key=api_key)
         config = types.GenerateContentConfig(
             system_instruction=SYSTEM_PROMPT,
             response_mime_type="application/json",
             temperature=0.2,
-            max_output_tokens=2048
+            max_output_tokens=2048,
         )
         response = client.models.generate_content(
             model="gemini-2.0-flash",
             contents=user_prompt,
-            config=config
+            config=config,
         )
         result = parse_ai_response(response.text)
-        logger.info(f"Gemini analysis complete. Verdict: {result['verdict']}, Score: {result['credibility_score']}")
+        logger.info(
+            f"Gemini analysis complete. Verdict: {result['verdict']}, Score: {result['credibility_score']}"
+        )
         return result
-    except Exception as e:
-        logger.error(f"Gemini analysis failed: {str(e)}")
+    except Exception as exc:
+        logger.error(f"Gemini analysis failed: {str(exc)}")
         raise
+
 
 def analyze_with_groq(user_prompt: str) -> dict:
     groq_api_key = os.environ.get("GROQ_API_KEY")
     if not groq_api_key:
         raise ValueError("GROQ_API_KEY not set")
-        
+
     try:
         response = requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {groq_api_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
             json={
                 "model": "llama-3.1-8b-instant",
                 "messages": [
                     {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": user_prompt}
+                    {"role": "user", "content": user_prompt},
                 ],
                 "temperature": 0.2,
-                "max_tokens": 2048
+                "max_tokens": 2048,
             },
-            timeout=45
+            timeout=45,
         )
         response.raise_for_status()
         response_data = response.json()
         result = parse_ai_response(response_data["choices"][0]["message"]["content"])
-        logger.info(f"Groq analysis complete. Verdict: {result['verdict']}, Score: {result['credibility_score']}")
+        logger.info(
+            f"Groq analysis complete. Verdict: {result['verdict']}, Score: {result['credibility_score']}"
+        )
         return result
-    except Exception as e:
-        logger.error(f"Groq analysis failed: {str(e)}")
+    except Exception as exc:
+        logger.error(f"Groq analysis failed: {str(exc)}")
         raise
 
-def analyze_content(content: str, input_type: str, domain_info: str = "Unknown", domain_rating: str = "Unknown") -> dict:
-    user_prompt = build_headline_prompt(content) if input_type == "HEADLINE" else build_user_prompt(content, input_type, domain_info, domain_rating)
-        
+
+def analyze_content(
+    content: str,
+    input_type: str,
+    domain_info: str = "Unknown",
+    domain_rating: str = "Unknown",
+) -> dict:
+    user_prompt = (
+        build_headline_prompt(content)
+        if input_type == "HEADLINE"
+        else build_user_prompt(content, input_type, domain_info, domain_rating)
+    )
+
     try:
         return analyze_with_gemini(user_prompt)
-    except Exception as e:
-        logger.warning(f"Gemini failed, falling back to Groq: {str(e)}")
+    except Exception as exc:
+        logger.warning(f"Gemini failed, falling back to Groq: {str(exc)}")
         try:
             return analyze_with_groq(user_prompt)
-        except Exception as e2:
-            logger.error(f"Both AI providers failed. Groq error: {str(e2)}")
+        except Exception as groq_exc:
+            logger.error(f"Both AI providers failed. Groq error: {str(groq_exc)}")
             return {
-               "verdict": "Unverifiable",
-               "credibility_score": 0,
-               "confidence": "Low",
-               "summary": "Analysis could not be completed due to a service error.",
-               "red_flags": [],
-               "credible_signals": [],
-               "manipulation_tactics": [],
-               "key_claims": ["Claim could not be extracted from this content"],
-               "reasoning": "Both AI analysis providers returned errors. This is a temporary service issue.",
-               "advice": "Please try again in a few minutes."
-           }
+                "verdict": "Unverifiable",
+                "credibility_score": 0,
+                "confidence": "Low",
+                "summary": "Analysis could not be completed due to a service error.",
+                "red_flags": [],
+                "credible_signals": [],
+                "manipulation_tactics": [],
+                "key_claims": ["Claim could not be extracted from this content"],
+                "reasoning": "Both AI analysis providers returned errors. This is a temporary service issue.",
+                "advice": "Please try again in a few minutes.",
+            }

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { analyzeContent } from '../services/api';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { analyzeContent, getHealth } from '../services/api';
 
 export const AnalysisContext = createContext(null);
 
@@ -9,9 +9,11 @@ export function AnalysisProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStage, setLoadingStage] = useState('idle');
   const [error, setError] = useState(null);
-  const mounted = useRef(true);
+  const [backendStatus, setBackendStatus] = useState('unknown');
 
-  // Timers to clean up
+  const mounted = useRef(true);
+  const hasCheckedBackend = useRef(false);
+  const backendRetryTimer = useRef(null);
   const timers = useRef([]);
 
   useEffect(() => {
@@ -20,58 +22,140 @@ export function AnalysisProvider({ children }) {
       if (stored) {
         setHistory(JSON.parse(stored));
       }
-    } catch (e) {
-      console.error('Failed to parse history from sessionStorage', e);
+    } catch (storageError) {
+      console.error('Failed to parse history from sessionStorage', storageError);
     }
+
     return () => {
       mounted.current = false;
+      if (backendRetryTimer.current) {
+        clearTimeout(backendRetryTimer.current);
+      }
       timers.current.forEach(clearTimeout);
     };
   }, []);
 
-  const updateHistory = useCallback((newResult) => {
-    setHistory((prev) => {
-      const updated = [newResult, ...prev].slice(0, 20);
+  useEffect(() => {
+    if (hasCheckedBackend.current) return;
+    hasCheckedBackend.current = true;
+
+    async function checkBackend({ isRetry = false } = {}) {
+      setBackendStatus('starting');
+      const startTime = Date.now();
+
       try {
-        sessionStorage.setItem('tl_history', JSON.stringify(updated));
-      } catch (e) {
-        console.error('Failed to save history', e);
+        const health = await getHealth();
+        if (!mounted.current) return;
+
+        const elapsed = Date.now() - startTime;
+
+        if (health?.status === 'ok') {
+          setBackendStatus('online');
+
+          if (elapsed > 5000) {
+            console.log(`[TruthLens] Backend was cold and responded in ${elapsed}ms.`);
+          }
+
+          return;
+        }
+
+        setBackendStatus('offline');
+      } catch {
+        if (!mounted.current) return;
+
+        if (!isRetry) {
+          if (backendRetryTimer.current) {
+            clearTimeout(backendRetryTimer.current);
+          }
+
+          backendRetryTimer.current = setTimeout(() => {
+            if (!mounted.current) return;
+            checkBackend({ isRetry: true });
+          }, 10000);
+          return;
+        }
+
+        setBackendStatus('offline');
       }
-      return updated;
+    }
+
+    checkBackend();
+  }, []);
+
+  const updateHistory = useCallback((newResult) => {
+    setHistory((previousHistory) => {
+      const updatedHistory = [newResult, ...previousHistory].slice(0, 20);
+      try {
+        sessionStorage.setItem('tl_history', JSON.stringify(updatedHistory));
+      } catch (storageError) {
+        console.error('Failed to save history', storageError);
+      }
+      return updatedHistory;
     });
   }, []);
 
-  const analyze = useCallback(async (inputValue) => {
-    setError(null);
-    setIsLoading(true);
-    timers.current.forEach(clearTimeout);
-    timers.current = [];
+  const analyze = useCallback(
+    async (inputValue) => {
+      setError(null);
+      setCurrentResult(null);
+      setIsLoading(true);
 
-    const isUrl = inputValue.trim().startsWith('http://') || inputValue.trim().startsWith('https://');
-    setLoadingStage(isUrl ? 'fetching_url' : 'analyzing');
+      timers.current.forEach(clearTimeout);
 
-    // Simulate stage progression
-    timers.current.push(setTimeout(() => { if (mounted.current && isLoading) setLoadingStage('analyzing'); }, 2000));
-    timers.current.push(setTimeout(() => { if (mounted.current && isLoading) setLoadingStage('corroborating'); }, 6000));
-    timers.current.push(setTimeout(() => { if (mounted.current && isLoading) setLoadingStage('finalizing'); }, 10000));
+      const stageTimers = [];
+      timers.current = stageTimers;
 
-    try {
-      const data = await analyzeContent(inputValue);
-      if (mounted.current) {
+      const isUrl =
+        inputValue.trim().startsWith('http://') || inputValue.trim().startsWith('https://');
+      setLoadingStage(isUrl ? 'fetching_url' : 'analyzing');
+
+      stageTimers.push(
+        setTimeout(() => {
+          if (mounted.current) setLoadingStage('analyzing');
+        }, 2000)
+      );
+      stageTimers.push(
+        setTimeout(() => {
+          if (mounted.current) setLoadingStage('corroborating');
+        }, 6000)
+      );
+      stageTimers.push(
+        setTimeout(() => {
+          if (mounted.current) setLoadingStage('finalizing');
+        }, 10000)
+      );
+
+      const timeoutWarningTimer = setTimeout(() => {
+        if (mounted.current) {
+          setLoadingStage('This is taking longer than usual. Still working...');
+        }
+      }, 20000);
+
+      stageTimers.push(timeoutWarningTimer);
+
+      try {
+        const data = await analyzeContent(inputValue);
+        if (!mounted.current) return;
+
         setCurrentResult(data);
         updateHistory(data);
-        setIsLoading(false);
-        setLoadingStage('idle');
         setError(null);
+      } catch (analysisError) {
+        if (!mounted.current) return;
+        setError(analysisError.message || 'Analysis failed. Please try again.');
+      } finally {
+        clearTimeout(timeoutWarningTimer);
+        stageTimers.forEach(clearTimeout);
+        timers.current = [];
+
+        if (mounted.current) {
+          setIsLoading(false);
+          setLoadingStage('idle');
+        }
       }
-    } catch (err) {
-      if (mounted.current) {
-        setError(err.message || 'Analysis failed. Please try again.');
-        setIsLoading(false);
-        setLoadingStage('idle');
-      }
-    }
-  }, [isLoading, updateHistory]);
+    },
+    [updateHistory]
+  );
 
   const clearResult = useCallback(() => {
     setCurrentResult(null);
@@ -85,24 +169,27 @@ export function AnalysisProvider({ children }) {
   }, []);
 
   return (
-    <AnalysisContext.Provider value={{
-      currentResult,
-      setCurrentResult,
-      history,
-      isLoading,
-      loadingStage,
-      error,
-      analyzeContent: analyze,
-      clearResult,
-      clearHistory
-    }}>
+    <AnalysisContext.Provider
+      value={{
+        currentResult,
+        setCurrentResult,
+        history,
+        isLoading,
+        loadingStage,
+        error,
+        backendStatus,
+        analyzeContent: analyze,
+        clearResult,
+        clearHistory,
+      }}
+    >
       {children}
     </AnalysisContext.Provider>
   );
 }
 
 export function useAnalysis() {
-  const ctx = useContext(AnalysisContext);
-  if (!ctx) throw new Error("useAnalysis must be used inside AnalysisProvider");
-  return ctx;
+  const context = useContext(AnalysisContext);
+  if (!context) throw new Error('useAnalysis must be used inside AnalysisProvider');
+  return context;
 }

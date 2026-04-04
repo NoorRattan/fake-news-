@@ -1,75 +1,85 @@
-# TruthLens: Project Report
+# TruthLens: Comprehensive Project Report
 
-## 1. Project Overview
-**TruthLens** is an advanced, AI-powered misinformation detection and fact-checking platform. It leverages state-of-the-art Large Language Models (LLMs) combined with real-time web search corroboration to evaluate the credibility of news articles, headlines, and social media claims.
-
----
-
-## 2. Technical Stack
-
-### **Backend (Core Logic & API)**
-The backend is built with **Python**, functioning as a high-performance asynchronous pipeline.
-- **Framework**: [FastAPI](https://fastapi.tiangolo.com/) (Asynchronous REST API)
-- **Server**: [Uvicorn](https://www.uvicorn.org/) (ASGI server)
-- **AI Integration**: 
-    - **Primary**: Google Gemini 1.5 Pro (via `google-genai`)
-    - **Secondary/Fallback**: Groq (Llama 3) for high-speed inference
-- **Search & Verification**:
-    - **Serper.dev**: Google Search API for real-time fact-checking
-- **Web Content Extraction**:
-    - `trafilatura`: For robust and clean article extraction from URLs
-- **Data Validation**: `Pydantic v2` for strict request/response schema modeling
-
-### **Frontend (User Interface)**
-A sleek, modern, and responsive interactive web application built with a modern component-based architecture.
-- **Framework**: **React 18** and **Vite** (replaces the previously stated Vanilla JS architecture)
-- **Routing**: `react-router-dom`
-- **Styling**: 
-    - **Tailwind CSS** combined with custom definitions for glassmorphism aesthetics.
-- **3D & Visualizations**: 
-    - Fully dynamic, utilizing **Three.js** via `@react-three/drei` and `@react-three/fiber` for immersive 3D backgrounds and elements.
-    - **Framer Motion** (`framer-motion`) handles seamless micro-animations and page transitions.
-- **State Management**: React Context APIs and hooks.
+TruthLens is an advanced, AI-powered misinformation detection and fact-checking platform. It leverages state-of-the-art Large Language Models (LLMs) combined with real-time web search corroboration to evaluate the credibility of news articles, headlines, and social media claims.
 
 ---
 
-## 3. System Architecture
-The application follows a decoupled client-server architecture:
+## 1. System Architecture Overview
 
-1.  **Request Layer**: The React frontend captures user input (Text, Headline, or URL) and transmits it via an API `POST` request to the backend `/api/analyze` endpoint.
-2.  **Scraping Engine**: If a URL is provided, the backend utilizes `trafilatura` to safely extract text.
-3.  **Corroboration Pipeline**: 
-    - The backend performs parallel searches via Serper to find supporting or contradicting evidence.
-4.  **AI Intelligence Layer**:
-    - Content is sent to the LLM (Gemini or Groq) to be analyzed for cognitive biases, manipulation tactics, and compared against live search results.
-5.  **Scoring & Enrichment**: 
-    - System calculates a Credibility Score and cross-references domains.
-6.  **Response Layer**: JSON payload is pushed back to the frontend where the React components immediately visualize the verdict with animated charts and breakdowns.
+TruthLens operates on a fully decoupled **Client-Server Architecture**. 
+- **The Client (Frontend)** is a high-performance Single Page Application (SPA) responsible for reactive user interactions, capturing multimodal inputs (text, URLs, headlines), and elegantly visualizing complex credibility data.
+- **The Server (Backend)** is an asynchronous Application Programming Interface (API) responsible for web scraping, database cross-referencing, multi-LLM analysis orchestration, and live internet fact-checking.
 
 ---
 
-## 4. Current Progress & Implementation Status
+## 2. Frontend Technology Stack & Deep Dive
 
-### **Backend Implementation**
-- [x] **Unified API**: Solid structural endpoints with modular routing (`routers/analyze.py`).
-- [x] **Resilient AI Pipeline**: Functional fallback mechanism handling Gemini defaults.
-- [x] **Smart Scraping**: `trafilatura` correctly handles URL extraction.
-- [x] **Initialization Safety**: Automatically verifies presence of API keys (`main.py`).
+The frontend abandons traditional static HTML, opting instead for a highly interactive, animated workspace designed to look highly professional and "editorial".
 
-### **Frontend Implementation**
-- [x] **Modern Tooling Upgrade**: Upgraded to a Vite + React workflow.
-- [x] **Dependency Issues Resolved**: Handled Vite version mismatch constraints successfully.
-- [x] **UI Elements**: Component suite including specialized rendering blocks (`HealthCheck.jsx`, `HistoryCard.jsx`, `CustomCursor.jsx`).
-- [x] **Animation Loop**: 3D and Framer Motion integration functional.
+### Core Technologies
+- **Framework**: **React 18** for component-based UI engineering.
+- **Build Tool**: **Vite**, replacing Webpack for ultra-fast Hot Module Replacement (HMR) and optimized production bundles.
+- **Routing**: `react-router-dom` for handling virtual pages (`/`, `/about`, `/history`) without reloading the DOM.
+
+### Styling & Animation Capabilities
+- **Tailwind CSS & Vanilla CSS**: Tailwind handles functional layout grids and responsive breaks. Vanilla CSS in `index.css` drives bespoke UI systems specific to TruthLens, such as "dark-glassmorphism", custom scrollbars, and specific typographic formatting (`Bebas Neue` & `DM Mono`).
+- **Framer Motion (`framer-motion`)**: Drives complex PageTransitions, smooth unmounting (`AnimatePresence`), and interactive micro-animations (like button snapping on the Analyze interface).
+- **Three.js (`@react-three/fiber` & `@react-three/drei`)**: Employs WebGL Canvas technology to render interactive 3D elements (such as `LoadingOrb.jsx`) in the browser to maintain user engagement during long asynchronous API wait times.
+
+### Key Components mapped in `src/`
+- **`Layout / Navbar`**: A persistent responsive shell. Houses dynamic Navigation Links (Home, About, History) that transition to a sliding drawer on mobile environments.
+- **`HomePage` (`InputForm` -> `LoadingView` -> `ResultsView`)**: A complex state machine holding the application logic. 
+  - Uses specific frosted-glass styling classes (e.g. `backdropFilter: blur(12px)`) on input overlays.
+  - Dynamically switches user views based on the execution phase of the AI Backend pipeline.
+- **Context API (`AnalysisContext`)**: Serves as the global state, allowing users to hold onto prior analysis histories during their active session without needing to hit the API again.
 
 ---
 
-## 5. Deployment & DevOps
-- **Deployment Strategy**: Includes configurations (`render.yaml`, `Procfile`) for automated deployment workflows on services like Render.
-- **Environment Management**: Robust key management, `.env` file templates are well defined.
+## 3. Backend Technology Stack & Deep Dive
+
+The backend is built around Python and is strictly asynchronous to ensure it does not bottleneck during heavy LLM generation or search phases.
+
+### Core Technologies
+- **Framework**: **FastAPI** provides native asynchronous routing, OpenAPI schema auto-generation, and ultra-fast Python execution.
+- **Server**: **Uvicorn** acts as the ASGI server.
+- **Data Typing**: **Pydantic v2** guarantees strict enforcement of JSON payload structures requested by or returned to the Frontend.
+
+### The AI & Corroboration Pipeline (`pipeline/orchestrator.py`)
+Triggering the `/api/analyze` POST endpoint kicks off a highly sophisticated 7-step fault-tolerant pipeline:
+
+1. **Input Handler (`input_handler.py`)**: Uses REGEX and content heuristics to classify if the string is a URL, a short Headline, or a raw Article body.
+2. **Text Extractor (`content_extractor.py`)**: If the input is a URL, the tool `trafilatura` extracts the core journalistic text natively from the DOM, stripping away advertisements, navigation, and irrelevant scripts to save AI tokens.
+3. **Source Checker (`source_checker.py`)**: Checks the extracted source domain against an internal `FAKE_DOMAINS` array and `CREDIBILITY_DB`. Matches directly influence the AI's final score ceiling.
+4. **Primary AI Analysis (`ai_analyzer.py` via Gemini)**: 
+   - A highly fortified `SYSTEM_PROMPT` enforces a rigid 0-100 credibility scoring rubric.
+   - It demands the LLM map to exact manipulation tactics ("Strawman", "Appeal to Fear") and extract the core factual claims.
+5. **Secondary AI Fallback (Groq / Llama 3)**: If Gemini is unavailable or rate-limited, the pipeline instantly degrades gracefully to Groq inference via `requests.post`, saving the user from a failed request.
+6. **Live Web Corroboration (`web_searcher.py`)**: Isolates the "Key Claims" the AI found in Step 4. Runs concurrent **Serper.dev** API web searches to find actual live context from the current internet proving or debunking the text. If Serper fails, it falls back to a DuckDuckGo browser scraper algorithm.
+7. **Assembly and Cache**: Maps AI insights and Corroboration search arrays into a unified `AnalysisResult` JSON format and caches it via `utils/cache.py` before returning it to the React layer.
 
 ---
 
-## 6. Actionable Next Steps
-- **Start Services**: Ensure both the Vite frontend server (`npm run dev`) and Uvicorn backend server (`uvicorn main:app --reload`) are running concurrently.
-- **Configure Env Variables**: Verify that `backend/.env` is fully populated with Gemini/Groq/Serper API keys before testing endpoints.
+## 4. API Endpoints
+
+The communication layer is simplified strictly to three core endpoints:
+- `POST /api/analyze` 
+  - **Payload**: `{"input": "text_or_url_here"}`
+  - **Returns**: Massive `AnalysisResult` schema containing `verdict`, `score`, `red_flags`, `tactics`, and `corroborations`.
+- `GET /api/health`
+  - Used by the React client (`HealthCheck.jsx`) to confirm Uvicorn is active. Returns `uptime_seconds`.
+- `GET /api/history`
+  - Dumps the backend memory cache mappings of previous analyses.
+
+---
+
+## 5. Environment Rules & Security
+
+- **`.env` Architecture**: Strict requirement of three core external keys.
+  - `GEMINI_API_KEY`: Google Gemini primary analysis provider.
+  - `GROQ_API_KEY`: Fallback super-fast Llama 3 inference.
+  - `SERPER_API_KEY`: Real-time Search Engine Results Page (SERP) API.
+- **CORS Mitigation**: `main.py` uses `CORSMiddleware`, currently allowing local development configurations, but is tied to an `ALLOWED_ORIGINS` environment variable for production lockdown.
+- **Server Safeties**: `main.py` utilizes a startup `<lifespan>` context manager to verify if keys exist on boot, alerting the developer gracefully rather than crashing asynchronously at runtime. 
+
+## 6. Actionable Status
+Currently, both the Frontend Vite Dev Server (`localhost:5173`) and the Backend Uvicorn Development Server (`localhost:8000`) are active and capable of processing full analytical loads natively.
