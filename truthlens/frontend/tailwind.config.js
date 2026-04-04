@@ -4,32 +4,43 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        syne: ["'Syne'", "sans-serif"],
-        dm: ["'DM Sans'", "sans-serif"],
-        mono: ["'Space Mono'", "monospace"],
+        bebas: ["'Bebas Neue'", "sans-serif"],
+        'dm-mono': ["'DM Mono'", "monospace"],
+        'instrument': ["'Instrument Serif'", "serif"],
+        // Keep existing if needed, but the ones above are required by Prompt 6
+        mono: ["'DM Mono'", "monospace"],
+        serif: ["'Instrument Serif'", "serif"],
       },
       colors: {
-        bg: { deep: "#080810", base: "#0f0f1a", surface: "#16162a" },
-        clay: { DEFAULT: "rgba(255,255,255,0.05)", border: "rgba(255,255,255,0.12)", subtle: "rgba(255,255,255,0.07)" },
-        text: { primary: "#eeeaf5", secondary: "#b8b4cc", muted: "#7a7890" },
-        accent: {
-          purple: "#a855f7", violet: "#818cf8",
-          green: "#4ade80",  red: "#f87171",
-          amber: "#fb923c",  yellow: "#facc15",
-          blue: "#38bdf8",   teal: "#2dd4bf"
+        // Base variables (from var)
+        bg: "var(--bg)",
+        surface: "var(--surface)",
+        border: "var(--border)",
+        text: "var(--text)",
+        muted: "var(--muted)",
+        
+        // Editorial Palette (New in Phase 2)
+        editorial: {
+          bg: '#0d0d0d',
+          surface: '#141414',
+          border: '#222222',
+          text: '#f0ede8',
+          muted: '#666666',
+        },
+        
+        // Verdict Palette (New in Phase 2)
+        verdict: {
+          real: '#47ff8f',
+          fake: '#ff4747',
+          misleading: '#ff9147',
+          mixed: '#e8ff47',
+          gray: '#666666',
+          // Keep legacy logic if any old component uses these
+          green: "#47ff8f",
+          red: "#ff4747",
+          amber: "#ff9147",
+          yellow: "#e8ff47",
         }
-      },
-      borderRadius: {
-        clay: "24px", clayLg: "32px", claySm: "16px", pill: "9999px"
-      },
-      boxShadow: {
-        clay: "0 8px 32px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.18)",
-        clayGreen: "0 8px 32px rgba(0,0,0,0.45), 0 0 28px rgba(74,222,128,0.18), inset 0 1px 0 rgba(255,255,255,0.18)",
-        clayRed: "0 8px 32px rgba(0,0,0,0.45), 0 0 28px rgba(248,113,113,0.18), inset 0 1px 0 rgba(255,255,255,0.18)",
-        clayAmber: "0 8px 32px rgba(0,0,0,0.45), 0 0 28px rgba(251,146,60,0.18), inset 0 1px 0 rgba(255,255,255,0.18)",
-        clayYellow: "0 8px 32px rgba(0,0,0,0.45), 0 0 28px rgba(250,204,21,0.18), inset 0 1px 0 rgba(255,255,255,0.18)",
-        clayPurple: "0 8px 32px rgba(0,0,0,0.45), 0 0 28px rgba(168,85,247,0.20), inset 0 1px 0 rgba(255,255,255,0.18)",
-        clayBtn: "0 6px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)"
       }
     },
   },

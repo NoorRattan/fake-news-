@@ -18,7 +18,7 @@ const MiniGlobeScene = ({ opacity }) => {
           <icosahedronGeometry args={[1.2, 3]} />
           <meshBasicMaterial 
             wireframe={true} 
-            color="#a855f7" 
+            color="#666666" 
             transparent={true} 
             opacity={opacity} 
           />

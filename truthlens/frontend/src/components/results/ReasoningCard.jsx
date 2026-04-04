@@ -1,35 +1,30 @@
 import React from 'react';
-import { MessageSquare, Lightbulb } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function ReasoningCard({ reasoning, advice }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-      
-      {/* LEFT: REASONING */}
-      <div className="clay-card p-6 border-l-4 border-l-accent-violet">
-        <div className="flex items-center gap-2 mb-3">
-          <MessageSquare size={16} className="text-accent-violet" />
-          <span className="font-mono text-xs text-text-muted tracking-widest uppercase">Why This Verdict?</span>
+    <motion.div 
+      variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } } }}
+      style={{ maxWidth: 960, margin: '20px auto 0', padding: '0 40px', display: 'grid', gap: '16px' }}
+      className="px-[16px] md:px-[40px] grid-cols-1 md:grid-cols-2"
+    >
+      <div style={{ background: '#141414', border: '1px solid #222222', borderRadius: 0, padding: '20px 24px' }}>
+        <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', color: '#666666', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '14px' }}>
+          WHY THIS VERDICT?
         </div>
-        <p className="font-mono text-[13px] leading-[1.9] text-text-secondary">
-          {reasoning || "Reasoning not available."}
-        </p>
+        <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '12px', lineHeight: 2, color: reasoning ? '#f0ede8' : '#666666', fontStyle: reasoning ? 'normal' : 'italic' }}>
+          {reasoning || 'Reasoning not available.'}
+        </div>
       </div>
 
-      {/* RIGHT: ADVICE */}
-      <div 
-        className="clay-card p-6 border-l-4 border-l-accent-yellow"
-        style={{ background: 'rgba(250,204,21,0.04)' }}
-      >
-        <div className="flex items-center gap-2 mb-3">
-          <Lightbulb size={16} className="text-accent-yellow" />
-          <span className="font-mono text-xs text-text-muted tracking-widest uppercase">What Should You Do?</span>
+      <div style={{ background: '#141414', border: '1px solid #222222', borderRadius: 0, padding: '20px 24px' }}>
+        <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', color: '#666666', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '14px' }}>
+          WHAT SHOULD YOU DO?
         </div>
-        <p className="font-dm text-sm leading-relaxed text-text-primary">
-          {advice || "No specific advice available."}
-        </p>
+        <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '12px', lineHeight: 2, color: advice ? '#f0ede8' : '#666666', fontStyle: advice ? 'normal' : 'italic' }}>
+          {advice || 'No specific advice available.'}
+        </div>
       </div>
-
-    </div>
+    </motion.div>
   );
 }

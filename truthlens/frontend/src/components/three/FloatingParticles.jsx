@@ -16,16 +16,22 @@ const ParticlesScene = () => {
       pos[i * 3 + 1] = (Math.random() - 0.5) * 60;
       pos[i * 3 + 2] = (Math.random() - 0.5) * 60;
       
-      if (Math.random() > 0.2) {
-        // Mostly purple/violet (#a855f7 / #818cf8)
-        col[i * 3] = 0.5 + Math.random() * 0.15;
-        col[i * 3 + 1] = 0.3 + Math.random() * 0.25;
-        col[i * 3 + 2] = 0.96;
+      const randColor = Math.random();
+      if (randColor > 0.3) {
+        // Muted #666666
+        col[i * 3] = 0.4;
+        col[i * 3 + 1] = 0.4;
+        col[i * 3 + 2] = 0.4;
+      } else if (randColor > 0.05) {
+        // Text #f0ede8
+        col[i * 3] = 0.941;
+        col[i * 3 + 1] = 0.929;
+        col[i * 3 + 2] = 0.910;
       } else {
-        // Green (#4ade80)
-        col[i * 3] = 0.290;
-        col[i * 3 + 1] = 0.871;
-        col[i * 3 + 2] = 0.502;
+        // Amber #ff9147 to add a touch of warmth
+        col[i * 3] = 1.0;
+        col[i * 3 + 1] = 0.568;
+        col[i * 3 + 2] = 0.278;
       }
     }
     return [pos, col];

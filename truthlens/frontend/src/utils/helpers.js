@@ -1,35 +1,32 @@
 import { format } from 'date-fns';
 
+/**
+ * Returns the hex code for a verdict in the editorial design system.
+ * Updated to use explicit hex codes from Prompt 6.
+ */
 export function getVerdictColor(verdict) {
   switch (verdict) {
-    case "Likely Real": return "#4ade80";
-    case "Likely Fake": return "#f87171";
-    case "Misleading":  return "#fb923c";
-    case "Mixed":       return "#facc15";
-    case "Unverifiable":return "#2dd4bf";
-    default:            return "#7a7890";
+    case 'Likely Real':    return '#47ff8f'
+    case 'Likely Fake':    return '#ff4747'
+    case 'Misleading':     return '#ff9147'
+    case 'Mixed':          return '#e8ff47'
+    case 'Unverifiable':   return '#666666'
+    default:               return '#666666'
   }
 }
 
-export function getVerdictShadow(verdict) {
-  switch (verdict) {
-    case "Likely Real": return { boxShadow: "0 8px 32px rgba(0,0,0,0.45), 0 0 28px rgba(74,222,128,0.18), inset 0 1px 0 rgba(255,255,255,0.18)" };
-    case "Likely Fake": return { boxShadow: "0 8px 32px rgba(0,0,0,0.45), 0 0 28px rgba(248,113,113,0.18), inset 0 1px 0 rgba(255,255,255,0.18)" };
-    case "Misleading":  return { boxShadow: "0 8px 32px rgba(0,0,0,0.45), 0 0 28px rgba(251,146,60,0.18), inset 0 1px 0 rgba(255,255,255,0.18)" };
-    case "Mixed":       return { boxShadow: "0 8px 32px rgba(0,0,0,0.45), 0 0 28px rgba(250,204,21,0.18), inset 0 1px 0 rgba(255,255,255,0.18)" };
-    case "Unverifiable":return { boxShadow: "0 8px 32px rgba(0,0,0,0.45), 0 0 28px rgba(45,212,191,0.18), inset 0 1px 0 rgba(255,255,255,0.18)" };
-    default:            return { boxShadow: "0 8px 32px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.18)" };
-  }
-}
-
+/**
+ * Returns a transparent background color (tint) for verdict cards.
+ * New in Phase 2 for VerdictBanner background decoration.
+ */
 export function getVerdictBg(verdict) {
-  switch (verdict) {
-    case "Likely Real": return "rgba(74,222,128,0.06)";
-    case "Likely Fake": return "rgba(248,113,113,0.06)";
-    case "Misleading":  return "rgba(251,146,60,0.06)";
-    case "Mixed":       return "rgba(250,204,21,0.06)";
-    case "Unverifiable":return "rgba(45,212,191,0.06)";
-    default:            return "rgba(255,255,255,0.03)";
+  switch(verdict) {
+    case 'Likely Real':    return 'rgba(71, 255, 143, 0.05)'
+    case 'Likely Fake':    return 'rgba(255, 71, 71, 0.05)'
+    case 'Misleading':     return 'rgba(255, 145, 71, 0.05)'
+    case 'Mixed':          return 'rgba(232, 255, 71, 0.05)'
+    case 'Unverifiable':   return 'rgba(102, 102, 102, 0.05)'
+    default:               return 'rgba(255, 255, 255, 0.02)'
   }
 }
 

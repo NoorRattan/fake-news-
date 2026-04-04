@@ -60,7 +60,7 @@ const OrbScene = () => {
       <mesh ref={coreRef}>
         <sphereGeometry args={[1, 64, 64]} />
         <meshStandardMaterial 
-          color="#a855f7" 
+          color="#f0ede8" 
           roughness={0.05} 
           metalness={0.85} 
           transparent={true} 
@@ -72,7 +72,7 @@ const OrbScene = () => {
         <icosahedronGeometry args={[1.55, 3]} />
         <meshBasicMaterial 
           wireframe={true} 
-          color="#818cf8" 
+          color="#666666" 
           transparent={true} 
           opacity={0.3} 
         />
@@ -89,16 +89,16 @@ const OrbScene = () => {
         </bufferGeometry>
         <PointMaterial 
           size={0.018} 
-          color="#818cf8" 
+          color="#666666" 
           transparent 
           opacity={0.6} 
           sizeAttenuation 
         />
       </points>
 
-      <pointLight ref={lightRef} intensity={2} color="#a855f7" />
+      <pointLight ref={lightRef} intensity={2} color="#f0ede8" />
       <ambientLight intensity={0.3} />
-      <pointLight position={[0, 5, 0]} intensity={0.8} color="#4ade80" />
+      <pointLight position={[0, 5, 0]} intensity={0.8} color="#47ff8f" />
     </>
   );
 };

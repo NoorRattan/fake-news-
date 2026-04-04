@@ -9,7 +9,6 @@ import { useAnalysis } from '../context/AnalysisContext';
 import { getServerHistory } from '../services/api';
 import PageTransition from '../components/PageTransition';
 import HistoryCard from '../components/HistoryCard';
-import MiniGlobe from '../components/three/MiniGlobe';
 
 export default function HistoryPage() {
   const { history, clearHistory, setCurrentResult } = useAnalysis();
@@ -31,7 +30,7 @@ export default function HistoryPage() {
         setServerHistory(data);
       }
     } catch (e) {
-      // Slient fail for server history as requested
+      // Silent fail for server history as requested
     } finally {
       setLoadingServer(false);
     }
@@ -89,24 +88,24 @@ export default function HistoryPage() {
       <div className="min-h-screen pt-24 pb-20 px-6 max-w-4xl mx-auto">
         
         {/* HEADER SECTION */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end flex-wrap gap-4 mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end flex-wrap gap-4 mb-8 border-b border-border pb-6">
           <div>
-            <p className="font-mono text-xs text-accent-purple tracking-widest uppercase">Session History</p>
-            <h1 className="font-syne font-extrabold text-4xl text-text-primary mt-1">Recent Analyses</h1>
-            <p className="font-dm text-sm text-text-muted mt-2">
+            <p className="font-mono text-xs text-muted tracking-widest uppercase mb-2">/// Session History</p>
+            <h1 className="font-bebas text-5xl md:text-6xl text-text tracking-wide uppercase mt-1">Recent Analyses</h1>
+            <p className="font-mono text-xs text-muted mt-2 uppercase">
               Your analysis history for this session. Closes when you close the tab.
             </p>
           </div>
           
           <div className="flex gap-3 items-center">
-            <span className="font-mono text-sm text-text-muted">
+            <span className="font-mono text-sm text-text bg-border/20 px-2 py-1 uppercase">
               {allHistory.length} analyses
             </span>
             
             <button 
               onClick={fetchServerHistory} 
               title="Refresh from server"
-              className={clsx("p-2 text-text-muted hover:text-text-primary transition-colors", loadingServer && "animate-spin")}
+              className={clsx("p-2 text-muted hover:text-text transition-colors border border-transparent hover:border-border", loadingServer && "animate-spin border-border")}
             >
               <RefreshCw size={16} />
             </button>
@@ -121,9 +120,9 @@ export default function HistoryPage() {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       onClick={() => setConfirmClear(true)}
-                      className="clay-btn-outline font-dm text-sm text-accent-red px-4 py-2 border-accent-red/30 hover:bg-accent-red/10 flex items-center gap-2"
+                      className="editorial-btn text-xs text-[var(--red)] border-[var(--red)] hover:bg-[var(--red)] hover:text-bg flex items-center gap-2"
                     >
-                      <Trash2 size={14} /> Clear All
+                      <Trash2 size={12} /> CLEAR ALL
                     </motion.button>
                   ) : (
                     <motion.div
@@ -131,15 +130,15 @@ export default function HistoryPage() {
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, scale: 0.9 }}
-                      className="flex items-center gap-2 bg-accent-red/10 border border-accent-red/20 rounded-full px-3 py-1.5"
+                      className="flex items-center gap-2 border border-[var(--red)] bg-surface px-3 py-1.5"
                     >
-                      <span className="font-dm text-xs text-accent-red mr-2">Are you sure?</span>
-                      <button onClick={handleClearConfirm} className="font-dm font-bold text-xs text-accent-red px-2 hover:underline">
-                        Yes, Clear
+                      <span className="font-mono text-[10px] text-[var(--red)] mr-2 uppercase">Are you sure?</span>
+                      <button onClick={handleClearConfirm} className="font-mono font-bold text-[10px] text-[var(--red)] px-2 hover:underline uppercase">
+                        YES, CLEAR
                       </button>
-                      <span className="text-accent-red/30">|</span>
-                      <button onClick={() => setConfirmClear(false)} className="font-dm text-xs text-text-muted hover:text-text-primary px-2 transition-colors">
-                        Cancel
+                      <span className="text-[var(--red)]/30">|</span>
+                      <button onClick={() => setConfirmClear(false)} className="font-mono text-[10px] text-muted hover:text-text px-2 transition-colors uppercase">
+                        CANCEL
                       </button>
                     </motion.div>
                   )}
@@ -154,18 +153,20 @@ export default function HistoryPage() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="clay-card max-w-md mx-auto p-12 mt-16 text-center flex flex-col items-center"
+            className="editorial-card max-w-md mx-auto p-12 mt-16 text-center flex flex-col items-center"
           >
-            <MiniGlobe size={180} opacity={0.4} />
-            <h2 className="font-syne font-bold text-2xl text-text-muted mt-6">No Analyses Yet</h2>
-            <p className="font-dm text-sm text-text-muted mt-2 max-w-xs mx-auto">
+            <div className="w-16 h-16 border border-muted flex items-center justify-center mb-6">
+               <Clock size={24} className="text-muted" />
+            </div>
+            <h2 className="font-bebas text-3xl text-muted mt-2 uppercase tracking-wide">No Analyses Yet</h2>
+            <p className="font-mono text-xs text-muted mt-3 max-w-xs mx-auto uppercase leading-relaxed">
               Paste an article, enter a URL, or type a claim to get your first verdict.
             </p>
             <button 
-              onClick={() => navigate("/analyze")}
-              className="clay-btn-primary font-dm text-sm px-6 py-3 mt-6 flex items-center gap-2 hover:scale-105 transition-transform"
+              onClick={() => navigate("/")}
+              className="editorial-btn-primary text-xs px-6 py-3 mt-8 flex items-center gap-2"
             >
-              Start Analyzing <ChevronRight size={16} />
+              START ANALYZING <ChevronRight size={14} />
             </button>
           </motion.div>
         ) : (
@@ -173,11 +174,14 @@ export default function HistoryPage() {
           <div className="flex flex-col">
             <AnimatePresence>
               {Object.keys(groupedHistory).map((groupName, groupIdx) => (
-                <motion.div key={groupName} className="mb-6">
-                  <h3 className={clsx("font-mono text-xs text-text-muted mb-3", groupIdx > 0 ? "mt-6" : "")}>
-                    {groupName}
-                  </h3>
-                  <div className="flex flex-col gap-1">
+                <motion.div key={groupName} className="mb-8">
+                  <div className={clsx("flex items-center gap-4 mb-4", groupIdx > 0 ? "mt-8" : "")}>
+                    <h3 className="font-bebas text-xl text-text tracking-wide uppercase">
+                      {groupName}
+                    </h3>
+                    <div className="flex-grow h-[1px] bg-border" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {groupedHistory[groupName].map((item, itemIdx) => (
                       <motion.div
                         key={item.analysis_id || `${item.timestamp}-${itemIdx}`}
@@ -190,7 +194,7 @@ export default function HistoryPage() {
                           item={item} 
                           onClick={() => {
                             setCurrentResult(item);
-                            navigate("/analyze");
+                            navigate("/");
                           }} 
                         />
                       </motion.div>

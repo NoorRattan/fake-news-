@@ -23,21 +23,21 @@ const GlobeScene = () => {
       pos[i * 3 + 2] = r * Math.cos(phi);
       
       const randColor = Math.random();
-      if (randColor < 0.33) {
-        // Purple #a855f7
-        col[i * 3] = 0.659;
-        col[i * 3 + 1] = 0.333;
-        col[i * 3 + 2] = 0.969;
-      } else if (randColor < 0.66) {
-        // Violet #818cf8
-        col[i * 3] = 0.506;
-        col[i * 3 + 1] = 0.549;
-        col[i * 3 + 2] = 0.973;
+      if (randColor < 0.2) {
+        // Green #47ff8f
+        col[i * 3] = 0.278;
+        col[i * 3 + 1] = 1.0;
+        col[i * 3 + 2] = 0.560;
+      } else if (randColor < 0.6) {
+        // Text #f0ede8
+        col[i * 3] = 0.941;
+        col[i * 3 + 1] = 0.929;
+        col[i * 3 + 2] = 0.910;
       } else {
-        // Green #4ade80
-        col[i * 3] = 0.290;
-        col[i * 3 + 1] = 0.871;
-        col[i * 3 + 2] = 0.502;
+        // Muted #666666
+        col[i * 3] = 0.4;
+        col[i * 3 + 1] = 0.4;
+        col[i * 3 + 2] = 0.4;
       }
     }
     
@@ -64,9 +64,9 @@ const GlobeScene = () => {
           <icosahedronGeometry args={[2.2, 4]} />
           <meshBasicMaterial 
             wireframe={true} 
-            color="#a855f7" 
+            color="#666666" 
             transparent={true} 
-            opacity={0.25} 
+            opacity={0.3} 
           />
         </mesh>
         
@@ -89,15 +89,15 @@ const GlobeScene = () => {
             size={0.022} 
             vertexColors 
             transparent 
-            opacity={0.75} 
+            opacity={0.8} 
             sizeAttenuation 
           />
         </points>
       </group>
       
       <ambientLight intensity={0.4} />
-      <pointLight position={[5, 5, 5]} intensity={1.2} color="#a855f7" />
-      <pointLight position={[-5, -5, -5]} intensity={0.6} color="#818cf8" />
+      <pointLight position={[5, 5, 5]} intensity={1.2} color="#f0ede8" />
+      <pointLight position={[-5, -5, -5]} intensity={0.6} color="#666666" />
     </Float>
   );
 };

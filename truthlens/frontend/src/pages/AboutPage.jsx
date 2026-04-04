@@ -1,11 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { AlertTriangle, Shield, Github, Layers, Cpu, Globe, Database, Code2, Zap, ArrowRight } from 'lucide-react';
+import { 
+  Brain, Shield, Globe, Zap, Database, BarChart3, 
+  ArrowRight, CheckCircle, Sparkles, AlertTriangle, 
+  ChevronDown, FileText, XCircle, Shuffle, HelpCircle
+} from 'lucide-react';
+import clsx from 'clsx';
 
-import PageTransition from '../components/PageTransition';
+import HeroGlobe from '../components/three/HeroGlobe';
 import FloatingParticles from '../components/three/FloatingParticles';
-import MiniGlobe from '../components/three/MiniGlobe';
+import PageTransition from '../components/PageTransition';
 
 export default function AboutPage() {
   const navigate = useNavigate();
@@ -14,262 +19,240 @@ export default function AboutPage() {
     document.title = "About — TruthLens";
   }, []);
 
-  const pipelineSteps = [
-    {
-      title: "Input Handler",
-      file: "input_handler.py",
-      color: "accent-blue",
-      desc: "Classifies the user's input as a full article, URL, or short headline/claim. Validates length limits, strips whitespace, and routes to the correct pipeline branch.",
-      tags: ["URL Detection", "Text Classification", "Sanitization"]
-    },
-    {
-      title: "Content Extraction",
-      file: "content_extractor.py",
-      color: "accent-purple",
-      desc: "Fetches and cleans article text from a URL using Trafilatura with BeautifulSoup4 as fallback. Extracts article title, domain, and publish date automatically.",
-      tags: ["Trafilatura", "BeautifulSoup4", "Metadata Extraction"]
-    },
-    {
-      title: "Pre-Analysis",
-      file: "orchestrator.py",
-      color: "accent-amber",
-      desc: "Cross-references the source domain against a known fake-news domain list and a credibility database of 500+ outlets. Known misinformation sources are flagged before AI analysis even begins.",
-      tags: ["Domain Blocklist", "Credibility DB", "Fast-Path Flagging"]
-    },
-    {
-      title: "AI Analysis",
-      file: "ai_analyzer.py",
-      color: "accent-purple",
-      desc: "Gemini 1.5 Pro performs deep analysis of linguistic patterns, logical consistency, factual plausibility, and emotional manipulation. Returns a structured JSON verdict including score, red flags, tactics, and reasoning. Groq Llama 3 is on standby as fallback.",
-      tags: ["Gemini 1.5 Pro", "Groq Fallback", "JSON Mode", "Temp 0.2"],
-      emphasize: true
-    },
-    {
-      title: "Web Corroboration",
-      file: "web_searcher.py",
-      color: "accent-green",
-      desc: "Key claims extracted by the AI are searched in real-time via Serper (Google Search API). Parallel async HTTP requests retrieve top results. DuckDuckGo serves as fallback. Target: under 2 seconds added latency.",
-      tags: ["Serper API", "asyncio.gather()", "DuckDuckGo Fallback"]
-    },
-    {
-      title: "Source Credibility",
-      file: "source_checker.py",
-      color: "accent-blue",
-      desc: "All URLs cited within the article body are extracted via regex and their domains are checked against the credibility database. Each source receives a credibility rating and political bias label.",
-      tags: ["500+ Domains", "Regex Extraction", "Bias Detection"]
-    },
-    {
-      title: "Result Aggregation",
-      file: "orchestrator.py",
-      color: "accent-green",
-      desc: "All pipeline outputs are merged and validated. If the source domain is on the fake-news blocklist, credibility score is hard-capped at 20. A UUID and timestamp are added. Result is cached in session memory.",
-      tags: ["Score Override", "UUID", "Session Cache", "Schema Validation"]
-    }
-  ];
-
-  const getColorClasses = (colorName) => {
-    switch (colorName) {
-      case 'accent-blue': return 'bg-accent-blue/10 border-accent-blue/30 text-accent-blue';
-      case 'accent-purple': return 'bg-accent-purple/10 border-accent-purple/30 text-accent-purple';
-      case 'accent-amber': return 'bg-accent-amber/10 border-accent-amber/30 text-accent-amber';
-      case 'accent-green': return 'bg-accent-green/10 border-accent-green/30 text-accent-green';
-      default: return 'bg-white/10 border-white/30 text-white';
+  const scrollToHowItWorks = () => {
+    const el = document.getElementById('how-it-works');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
     }
   };
-
-  const techStack = [
-    { icon: <Code2 className="text-accent-violet" />, name: "React 18 + Vite", role: "Frontend Framework" },
-    { icon: <Layers className="text-accent-purple" />, name: "Three.js + R3F", role: "3D Rendering" },
-    { icon: <Zap className="text-accent-amber" />, name: "Framer Motion", role: "Animations" },
-    { icon: <span className="font-syne font-bold text-accent-blue">CSS</span>, name: "Tailwind CSS", role: "Styling" },
-    { icon: <Cpu className="text-accent-green" />, name: "FastAPI", role: "Backend API" },
-    { icon: <Cpu className="text-accent-purple" />, name: "Gemini 1.5 Pro", role: "Primary AI" },
-    { icon: <Globe className="text-accent-blue" />, name: "Serper API", role: "Web Search" },
-    { icon: <Shield className="text-accent-green" />, name: "Pydantic v2", role: "Data Validation" },
-  ];
 
   return (
     <PageTransition>
       <FloatingParticles />
-      <div className="min-h-screen pt-24 pb-20 px-6">
-        <div className="max-w-4xl mx-auto">
+      
+      {/* SECTION 1: HERO */}
+      <section className="relative min-h-screen flex items-center">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 w-full grid grid-cols-1 lg:grid-cols-2 gap-10">
           
-          {/* SECTION 1: HERO */}
-          <div className="text-center mb-20">
-            <motion.p
-              initial={{ opacity: 0, y: 15 }}
+          {/* LEFT COLUMN */}
+          <div className="flex flex-col justify-center gap-6 py-20 lg:py-0">
+            {/* Top Badge */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="font-mono text-xs text-accent-purple tracking-widest uppercase mb-2"
+              className="editorial-tag self-start flex items-center gap-2 bg-bg text-muted uppercase tracking-widest"
             >
-              About TruthLens
-            </motion.p>
-            <motion.h1
-              initial={{ opacity: 0, y: 15 }}
+              <div className="w-2 h-2 bg-text animate-pulse" />
+              <span>AI-Powered · Real-Time · Explainable</span>
+            </motion.div>
+
+            {/* Main Heading */}
+            <motion.h1 
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="font-syne font-extrabold text-5xl gradient-text mt-2 block"
+              className="flex flex-col gap-2 font-bebas text-6xl md:text-8xl tracking-wide uppercase text-text leading-none"
             >
-              Fighting Misinformation with AI
+              <span>See Through</span>
+              <span>The Noise.</span>
             </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 15 }}
+
+            {/* Subheading */}
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="font-dm text-lg text-text-secondary mt-4 max-w-2xl mx-auto leading-relaxed text-center"
+              className="font-mono text-base md:text-lg text-text leading-relaxed max-w-lg"
             >
-              TruthLens is a multi-layer AI fact-checking platform built in 24 hours 
-              for a competitive hackathon. It combines large language models, real-time 
-              web search, and source credibility analysis to give users an instant, 
-              explainable verdict on any piece of content.
+              Paste any news article, URL, or headline. Our multi-layer AI pipeline — powered by Google Gemini and real-time web search — delivers an instant, explainable verdict on any piece of content.
             </motion.p>
-          </div>
 
-          {/* SECTION 2: THE PROBLEM + SOLUTION */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-24">
+            {/* CTA Buttons */}
             <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="clay-card p-8 border-l-4 border-l-accent-red"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="flex flex-wrap gap-4 mt-2"
             >
-              <AlertTriangle size={32} className="text-accent-red" />
-              <h3 className="font-syne font-bold text-xl mt-4 text-text-primary">The Misinformation Crisis</h3>
-              <p className="font-dm text-sm text-text-secondary leading-relaxed mt-3">
-                Fake news, manipulated media, and misleading headlines spread faster than 
-                truth. Existing fact-checking sites require manual searching and only cover 
-                already-viral stories. The average person has no fast, free tool to verify 
-                content in real time before sharing.
-              </p>
+              <motion.button 
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/')}
+                className="editorial-btn-primary flex items-center gap-2"
+              >
+                Start Analyzing <ArrowRight size={16} />
+              </motion.button>
+              
+              <button 
+                onClick={scrollToHowItWorks}
+                className="editorial-btn transition-colors hover:bg-surface"
+              >
+                How It Works
+              </button>
             </motion.div>
-            
+
+            {/* Trust Signals */}
             <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="clay-card p-8 border-l-4 border-l-accent-green"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.55 }}
+              className="flex flex-wrap gap-6 mt-4 uppercase border-t border-border pt-4"
             >
-              <Shield size={32} className="text-accent-green" />
-              <h3 className="font-syne font-bold text-xl mt-4 text-text-primary">A One-Stop Verification Tool</h3>
-              <p className="font-dm text-sm text-text-secondary leading-relaxed mt-3">
-                TruthLens lets you paste any content and receive an instant, 
-                explainable verdict. Our seven-step pipeline combines AI linguistic 
-                analysis, live web search corroboration, domain credibility lookup, 
-                and manipulation tactic detection — all in under 15 seconds.
-              </p>
+              <div className="flex items-center gap-2 font-mono text-xs text-muted">
+                <span>[🔒]</span> SECURE PIPELINE
+              </div>
+              <div className="flex items-center gap-2 font-mono text-xs text-muted">
+                <span>[⚡]</span> INSTANT VERDICT
+              </div>
+              <div className="flex items-center gap-2 font-mono text-xs text-muted">
+                <span>[🌐]</span> LIVE VERIFICATION
+              </div>
             </motion.div>
           </div>
 
-          {/* SECTION 3: TECHNICAL PIPELINE */}
-          <div className="mb-24">
-            <h2 className="font-syne font-bold text-3xl text-center text-text-primary mb-12">
-              The 7-Step Pipeline
-            </h2>
-            <div className="flex flex-col">
-              {pipelineSteps.map((step, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ delay: index * 0.12 }}
-                  className="flex items-start gap-5 mb-8 last:mb-0"
-                >
-                  <div className="flex flex-col items-center">
-                    <div className={`w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center border font-syne font-extrabold text-sm ${getColorClasses(step.color)}`}>
-                      {index + 1}
-                    </div>
-                    {index < pipelineSteps.length - 1 && (
-                      <div className={`w-px h-full min-h-[60px] opacity-30 mt-2 bg-${step.color}`} />
-                    )}
-                  </div>
-                  
-                  <div className={`clay-card-sm p-5 flex-1 ${step.emphasize ? 'border border-accent-purple/30 bg-accent-purple/5' : ''}`}>
-                    <h4 className="font-syne font-bold text-base text-text-primary">
-                      {step.title}
-                    </h4>
-                    <div className="font-mono text-xs clay-pill text-text-muted mt-1 self-start inline-block shadow-none border-transparent bg-white/5 px-2 py-0.5">
-                      {step.file}
-                    </div>
-                    <p className="font-dm text-sm text-text-secondary leading-relaxed mt-2">
-                      {step.desc}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {step.tags.map((tag, tIndex) => (
-                        <div key={tIndex} className={`font-mono text-[10px] clay-pill px-2 py-0.5 shadow-none border-transparent ${getColorClasses(step.color)}`}>
-                          {tag}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+          {/* RIGHT COLUMN */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.35, duration: 0.8 }}
+            className="hidden lg:flex items-center justify-center relative"
+          >
+            <div className="relative w-full h-[420px] lg:h-[520px] hidden md:block">
+              <HeroGlobe />
             </div>
-          </div>
-
-          {/* SECTION 4: TECH STACK GRID */}
-          <div className="mb-24">
-            <h2 className="font-syne font-bold text-3xl text-center text-text-primary mt-20 mb-10">
-              Built With
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {techStack.map((tech, i) => (
-                <motion.div
-                  key={i}
-                  whileHover={{ y: -3 }}
-                  className="clay-card-sm p-5 text-center flex flex-col items-center transition-all cursor-default"
-                >
-                  <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-full mb-2">
-                    {tech.icon}
-                  </div>
-                  <div className="font-syne font-bold text-sm text-text-primary mt-2">
-                    {tech.name}
-                  </div>
-                  <div className="font-dm text-xs text-text-muted mt-1">
-                    {tech.role}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          {/* SECTION 5: TEAM */}
-          <div className="mb-24">
-            <h2 className="font-syne font-bold text-3xl text-center text-text-primary mt-20 mb-4">
-              Team O(1) Gang
-            </h2>
-            <p className="font-dm text-text-muted text-center mb-10">
-              Built in 24 hours at a competitive hackathon.
-            </p>
-            <div className="clay-card max-w-sm mx-auto p-8 text-center flex flex-col items-center">
-              <MiniGlobe size={120} opacity={0.6} />
-              <div className="font-syne font-extrabold text-2xl gradient-text mt-4">
-                O(1) Gang
-              </div>
-              <div className="font-dm text-sm text-text-muted mt-2">
-                Full-Stack · AI Pipeline · Frontend · Backend · Deployment
-              </div>
-              <div className="font-dm text-xs text-text-muted/60 mt-4 italic">
-                Building tools that make truth accessible.
-              </div>
-            </div>
-          </div>
-
-          {/* SECTION 6: FINAL CTA */}
-          <div className="text-center py-16">
-            <p className="font-syne font-bold text-2xl text-text-primary">
-              See TruthLens in action.
-            </p>
-            <button
-              onClick={() => navigate('/analyze')}
-              className="clay-btn-primary mt-4 px-8 py-4 flex items-center gap-2 mx-auto hover:scale-105 transition-transform"
-            >
-              Try Analyzing Now <ArrowRight size={18} />
-            </button>
-          </div>
-
+          </motion.div>
+          
         </div>
-      </div>
+
+        {/* Scroll Indicator */}
+        <div className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-2 opacity-60">
+          <span className="font-mono text-xs text-muted uppercase">Scroll to explore</span>
+          <ChevronDown size={20} className="text-muted" />
+        </div>
+      </section>
+
+      {/* SECTION: HOW IT WORKS */}
+      <section id="how-it-works" className="py-24 px-6 md:px-10 max-w-7xl mx-auto border-t border-border">
+        <div className="text-center mb-16">
+          <p className="font-mono text-xs text-muted tracking-widest mb-3 uppercase">/// THE PIPELINE</p>
+          <h2 className="font-bebas text-5xl md:text-6xl text-text uppercase tracking-wide">
+            What Happens When You Analyze
+          </h2>
+          <p className="font-mono text-text mt-4 max-w-xl mx-auto">
+            A precise multi-layered sequence runs to produce a comprehensive, explainable verdict.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {useMemo(() => [
+            {
+              icon: <FileText className="text-text" size={20} />,
+              title: "Smart Input Detection",
+              body: "Accepts full articles, URLs (auto-fetched), or short claims. Automatically classifies your input and routes it through the right pipeline path.",
+              tagLabel: "TEXT • URL • HEADLINE"
+            },
+            {
+              icon: <Brain className="text-text" size={20} />,
+              title: "AI Analysis",
+              body: "Google Gemini 1.5 Pro performs deep linguistic analysis — detecting logical inconsistencies, emotional manipulation, and factual implausibility.",
+              tagLabel: "GEMINI 1.5 PRO"
+            },
+            {
+              icon: <BarChart3 className="text-text" size={20} />,
+              title: "Credibility Score",
+              body: "Every analysis produces a 0–100 credibility score. Aggregates AI confidence, domain reputation, source quality, and corroboration results.",
+              tagLabel: "0–100 SCORE"
+            },
+            {
+              icon: <AlertTriangle className="text-text" size={20} />,
+              title: "Red Flag Detection",
+              body: "Identifies 10+ categories of warning signals: sensational language, missing sources, anonymous citations, and logical contradictions.",
+              tagLabel: "NEWS DOMAINS"
+            }
+          ], []).map((card, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: i * 0.1 }}
+              className="editorial-card flex flex-col gap-4"
+            >
+              <div className="w-10 h-10 border border-border flex items-center justify-center">
+                {card.icon}
+              </div>
+              <h3 className="font-bebas text-2xl text-text tracking-wide uppercase">
+                {card.title}
+              </h3>
+              <p className="font-mono text-sm text-muted leading-relaxed flex-grow">
+                {card.body}
+              </p>
+              <div className="editorial-tag self-start mt-2">
+                {card.tagLabel}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* SECTION: VERDICT TYPES */}
+      <section className="py-24 px-6 md:px-10 max-w-5xl mx-auto border-t border-border">
+        <div className="text-center mb-16">
+          <p className="font-mono text-xs text-muted tracking-widest mb-3 uppercase">/// CLASSIFICATION</p>
+          <h2 className="font-bebas text-5xl text-text uppercase tracking-wide">Five Possible Verdicts</h2>
+          <p className="font-mono text-text mt-4 max-w-xl mx-auto">
+            The AI returns one of these classifications based on its multi-layer analysis.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-4 justify-center">
+          {[
+            { name: "Likely Real", color: "text-[var(--green)]", border: "border-[var(--green)]", desc: "Content is factual with credible sources." },
+            { name: "Likely Fake", color: "text-[var(--red)]", border: "border-[var(--red)]", desc: "Demonstrably false, fabricated, or deceptive." },
+            { name: "Misleading", color: "text-[var(--amber)]", border: "border-[var(--amber)]", desc: "Contains factual elements but strips context." },
+            { name: "Mixed", color: "text-[var(--yellow)]", border: "border-[var(--yellow)]", desc: "Combines true claims with falsehoods." },
+            { name: "Unverifiable", color: "text-[var(--gray)]", border: "border-[var(--gray)]", desc: "Lacks enough evidence to make a conclusion." }
+          ].map((verdict, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              style={{ borderTopColor: verdict.border.replace('border-', '') }}
+              className={`editorial-card border-t-2 w-full sm:w-[calc(50%-8px)] lg:w-[calc(20%-13px)] flex flex-col gap-3 min-h-[140px]`}
+            >
+              <h4 className={`font-bebas text-2xl uppercase tracking-wide ${verdict.color}`}>
+                {verdict.name}
+              </h4>
+              <p className="font-mono text-xs text-muted leading-relaxed">
+                {verdict.desc}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* SECTION: FINAL CTA BANNER */}
+      <section className="py-24 px-6 md:px-10 max-w-4xl mx-auto text-center border-t border-border mb-20">
+        <h2 className="font-bebas text-5xl md:text-6xl text-text tracking-wide uppercase mb-6">
+          Ready to Detect Misinformation?
+        </h2>
+        <p className="font-mono text-text mb-10 max-w-2xl mx-auto">
+          Paste an article, enter a URL, or type a headline. Get your verdict in seconds.
+        </p>
+        
+        <motion.button
+          onClick={() => navigate('/')}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="editorial-btn-primary text-xl px-12 py-5 mx-auto"
+        >
+          START ANALYSIS
+        </motion.button>
+      </section>
+
     </PageTransition>
   );
 }

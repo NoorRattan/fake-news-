@@ -1,40 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,400;0,700;1,400&family=Instrument+Serif:ital@1&family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Space+Mono:wght@400;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg-deep: #080810;
-  --bg-base: #0f0f1a;
-  --bg-surface: #16162a;
-  
-  --bg-clay: rgba(255,255,255,0.05);
-  --border-clay: rgba(255,255,255,0.12);
-  --border-subtle: rgba(255,255,255,0.07);
-  
-  --text-primary: #eeeaf5;
-  --text-secondary: #b8b4cc;
-  --text-muted: #7a7890;
+  --bg: #0d0d0d;
+  --surface: #141414;
+  --border: #222222;
+  --text: #f0ede8;
+  --muted: #666666;
 
-  --accent-purple: #a855f7;
-  --accent-violet: #818cf8;
-  --accent-green: #4ade80;
-  --accent-red: #f87171;
-  --accent-amber: #fb923c;
-  --accent-yellow: #facc15;
-  --accent-blue: #38bdf8;
-  --accent-teal: #2dd4bf;
+  --green: #47ff8f;
+  --red: #ff4747;
+  --amber: #ff9147;
+  --yellow: #e8ff47;
+  --gray: #666666;
   
   --transition-fast: 0.15s ease;
   --transition-base: 0.25s ease;
   --transition-slow: 0.4s ease;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0; }
 html { scroll-behavior: smooth; }
 body { 
-  background-color: var(--bg-base);
-  color: var(--text-primary);
-  font-family: 'DM Sans', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -42,56 +34,54 @@ body {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-deep); }
-::-webkit-scrollbar-thumb { background: #a855f7; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #818cf8; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
-::selection { background: rgba(168,85,247,0.35); color: var(--text-primary); }
+::selection { background: rgba(240,237,232,0.2); color: var(--text); }
 
-.clay-card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 24px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.18);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+/* Editorial Containers */
+.editorial-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 24px;
 }
 
-.clay-card-sm {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.30), 0 1px 4px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.18);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-}
-
-.clay-pill {
-  border-radius: 9999px;
-  padding: 5px 14px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
-}
-
-.clay-btn-primary {
-  border-radius: 9999px;
-  background: linear-gradient(135deg, #a855f7, #818cf8);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
-  color: white;
-}
-
-.clay-btn-outline {
-  border-radius: 9999px;
+.editorial-btn {
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.2);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 8px 16px;
+  font-family: 'DM Mono', monospace;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
 }
 
-.gradient-text {
-  background: linear-gradient(135deg, #a855f7, #818cf8, #4ade80);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+.editorial-btn-primary {
+  background: var(--text);
+  color: var(--bg);
+  border: 1px solid var(--text);
+  border-radius: 0;
+  padding: 8px 16px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+}
+
+.editorial-btn:hover {
+  background: var(--surface);
+}
+
+.editorial-tag {
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 4px 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
 }
 
 @keyframes float { 
@@ -122,11 +112,177 @@ img, video, canvas { max-width: 100%; display: block; }
 }
 
 @media (max-width: 640px) {
-  .clay-card { border-radius: 18px; padding: 16px; }
+  .editorial-card { padding: 16px; }
   h1 { font-size: clamp(2rem, 8vw, 3rem); }
-  .hero-heading { font-size: clamp(2.5rem, 10vw, 4.5rem); }
 }
 
 @media print {
-  .clay-card { box-shadow: none; border: 1px solid #ccc; }
+  .editorial-card { border: 1px solid #ccc; }
+}
+
+/* Global border-radius override for the main analyze page */
+/* These ensure no stray border-radius from Tailwind appears on the home page */
+
+/* Textarea custom scrollbar for the editorial dark textarea */
+.analyze-textarea::-webkit-scrollbar { width: 4px; }
+.analyze-textarea::-webkit-scrollbar-track { background: #0d0d0d; }
+.analyze-textarea::-webkit-scrollbar-thumb { background: #333333; }
+
+/* Score counter animation smoothing */
+.score-display { font-variant-numeric: tabular-nums; }
+
+/* Cursor blink for loading dots */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Step pulse ring for active loading step */
+@keyframes step-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(240,237,232,0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(240,237,232,0); }
+}
+.step-active { animation: step-pulse 1.5s ease-out infinite; }
+
+/* ═══════════════════════════════════════════════════
+   PHASE 2 ADDITIONS — Editorial design system for HomePage
+   ═══════════════════════════════════════════════════ */
+
+/* Design tokens for the sharp editorial home page */
+:root {
+  --editorial-bg: #0d0d0d;
+  --editorial-surface: #141414;
+  --editorial-border: #222222;
+  --editorial-text: #f0ede8;
+  --editorial-muted: #666666;
+  
+  /* Verdict colors — shared between both design systems */
+  --verdict-real:         #47ff8f;
+  --verdict-fake:         #ff4747;
+  --verdict-misleading:   #ff9147;
+  --verdict-mixed:        #e8ff47;
+  --verdict-unverifiable: #666666;
+}
+
+/* DM Mono font application helpers */
+.font-editorial { font-family: 'DM Mono', monospace; }
+.font-bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; }
+.font-serif-italic { font-family: 'Instrument Serif', serif; font-style: italic; }
+
+/* Editorial button base — sharp, rectangular, no radius */
+.btn-editorial {
+  border-radius: 0;
+  font-family: 'DM Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid var(--editorial-border);
+  background: transparent;
+  color: var(--editorial-muted);
+}
+.btn-editorial:hover {
+  border-color: var(--editorial-text);
+  color: var(--editorial-text);
+}
+.btn-editorial-primary {
+  border-radius: 0;
+  background: var(--editorial-text);
+  color: var(--editorial-bg);
+  border: none;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-editorial-primary:hover {
+  background: var(--verdict-real);
+  color: var(--editorial-bg);
+}
+
+/* Tag/chip base for editorial design */
+.tag-editorial {
+  border-radius: 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 4px 10px;
+  display: inline-block;
+}
+.tag-red {
+  background: rgba(255,71,71,0.08);
+  border: 1px solid rgba(255,71,71,0.35);
+  color: #ff4747;
+}
+.tag-green {
+  background: rgba(71,255,143,0.08);
+  border: 1px solid rgba(71,255,143,0.35);
+  color: #47ff8f;
+}
+.tag-amber {
+  background: rgba(255,145,71,0.08);
+  border: 1px solid rgba(255,145,71,0.35);
+  color: #ff9147;
+}
+.tag-outline {
+  border: 1px solid #333333;
+  color: #666666;
+  background: transparent;
+}
+
+/* Editorial section label */
+.label-editorial {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #666666;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Editorial card */
+.card-editorial {
+  background: #141414;
+  border: 1px solid #222222;
+  border-radius: 0;
+  padding: 20px 24px;
+}
+
+/* Score counter smooth number rendering */
+.score-number {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Responsive max-width container for editorial pages */
+.editorial-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+@media (max-width: 640px) {
+  .editorial-container { padding: 0 16px; }
+}
+
+/* Loading step active pulse */
+@keyframes step-pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(240,237,232,0.5); }
+  70%  { box-shadow: 0 0 0 8px rgba(240,237,232,0); }
+  100% { box-shadow: 0 0 0 0 rgba(240,237,232,0); }
+}
+.step-active-dot { animation: step-pulse-ring 1.5s ease-out infinite; }
+
+/* Responsive adjustments for the editorial home page */
+@media (max-width: 640px) {
+  /* Verdict text scaling */
+  .verdict-large { font-size: 48px !important; }
+  .score-large { font-size: 56px !important; }
+  /* Two-column grids collapse to single column */
+  .results-grid { grid-template-columns: 1fr !important; }
+  /* URL row stacks on mobile */
+  .url-row { flex-direction: column !important; }
+  .url-row .btn-editorial-primary { width: 100%; height: 48px; }
+}
+@media (max-width: 480px) {
+  .editorial-container { padding: 0 12px; }
 }
