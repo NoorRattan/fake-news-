@@ -1,69 +1,53 @@
-# TruthLens
+# TruthLens Frontend
 
-TruthLens is an AI-powered fake news and misinformation detector. It provides both a FastAPI backend and a React/Vite frontend for analyzing text, headlines, and URLs with AI scoring plus web-search corroboration.
+TruthLens is an AI-powered fake news and misinformation detector. This repository contains the **Frontend** application, built with React, Vite, Tailwind CSS, and Framer Motion, featuring a premium editorial design system.
 
-## Backend Setup
-1. Clone the repository:
+## 🚀 Vision
+Our mission is to provide a high-fidelity, transparent, and authoritative interface for analyzing information credibility in real-time.
+
+## 🎨 Design System: "Editorial Dark"
+The frontend utilizes a custom-built design system characterized by:
+- **Sharp Borders:** 0px border-radius for a professional, "newspaper-like" feel.
+- **High Contrast:** Deep charcoal backgrounds with off-white text.
+- **Authority Typography:** `Bebas Neue` for headers and `DM Mono` for technical data.
+- **3D Interactive Elements:** Global visualizations and loading states powered by Three.js.
+
+## 🛠 Tech Stack
+- **Framework:** React 18
+- **Build System:** Vite
+- **Styling:** Tailwind CSS + Vanilla CSS Transitions
+- **Animation:** Framer Motion
+- **3D Graphics:** React Three Fiber / Drei
+- **Icons:** Lucide React
+
+## 📦 Setup & Installation
+
+1. **Clone the repository:**
    ```bash
    git clone <repository_url>
-   cd truthlens
-   ```
-2. Create the backend environment file:
-   ```bash
-   cp backend/.env.example backend/.env
-   ```
-3. Install backend dependencies:
-   ```bash
-   cd backend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-4. Run the API:
-   ```bash
-   uvicorn main:app --reload
+   cd truthlens/frontend
    ```
 
-## Frontend Setup
-1. Install frontend dependencies:
+2. **Install dependencies:**
    ```bash
-   cd frontend
    npm install
    ```
-2. Create the local frontend environment file:
+
+3. **Configure Environment:**
+   Create a `.env` file in the `frontend/` directory (refer to `.env.production.example` for required variables).
    ```bash
-   cp .env.example .env.local
+   VITE_API_BASE_URL=http://localhost:8000
    ```
-3. Point the frontend at the local backend:
-   ```bash
-   VITE_API_URL=http://localhost:8000
-   ```
-4. Run the frontend:
+
+4. **Run Development Server:**
    ```bash
    npm run dev
    ```
 
-## API Endpoints
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/analyze` | Submit text to analyze with body `{"input": "..."}` |
-| `GET`  | `/api/health` | Check API status and uptime |
-| `GET`  | `/api/history` | Retrieve cached analyses |
+5. **Build for Production:**
+   ```bash
+   npm run build
+   ```
 
-## Environment Variables
-| Variable | Description | Where to get it |
-|----------|-------------|-----------------|
-| `GEMINI_API_KEY` | Google Gemini API | [Google AI Studio](https://aistudio.google.com/app/apikey) |
-| `GROQ_API_KEY` | Groq AI Inference | [Groq Console](https://console.groq.com/) |
-| `SERPER_API_KEY` | Google Search API | [Serper.dev](https://serper.dev/) |
-| `ALLOWED_ORIGINS` | Comma-separated frontend origins allowed by CORS | Your deployed frontend URL plus localhost entries |
-| `VITE_API_URL` | Frontend API base URL | Your deployed Render backend URL |
-
-## Deployment
-The backend `Procfile` and `render.yaml` are pre-configured for Render. The frontend is set up for either Netlify or Vercel.
-
-### Production Connection Checklist
-1. Set `ALLOWED_ORIGINS` in Render to your deployed frontend URL plus local development origins, including both `http://localhost:5173` and `http://127.0.0.1:5173`.
-2. Set `VITE_API_URL` in Netlify or Vercel to your deployed Render backend URL.
-3. Redeploy the frontend after saving `VITE_API_URL`.
-4. Verify `GET /api/health` and one `POST /api/analyze` request from the deployed frontend.
+---
+*True and accurate information is the cornerstone of a free society. TruthLens helps you see through the noise.*

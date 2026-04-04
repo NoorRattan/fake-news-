@@ -1,1 +1,0 @@
-# TruthLens — Pydantic models package
