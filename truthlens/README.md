@@ -2,6 +2,13 @@
 
 TruthLens is an AI-powered fake news and misinformation detector. It provides both a FastAPI backend and a React/Vite frontend for analyzing text, headlines, and URLs with Groq primary analysis, Cohere fallback, and web-search corroboration.
 
+## Live Demo
+- Frontend: https://truthlens-omega.vercel.app
+- Backend API: https://truthlens-api-4vou.onrender.com
+- Backend health check: https://truthlens-api-4vou.onrender.com/api/health
+
+Judges can use the live deployment directly from the links above. The real `.env` file is intentionally not committed; local setup still uses the example environment files included in this repo.
+
 ## Backend Setup
 1. Clone the repository:
    ```bash
@@ -64,6 +71,8 @@ The backend `Procfile` and `render.yaml` are pre-configured for Render. The fron
 
 ### Production Connection Checklist
 1. Set `ALLOWED_ORIGINS` in Render to your deployed frontend URL plus local development origins, including both `http://localhost:5173` and `http://127.0.0.1:5173`.
+   Current value: `https://truthlens-omega.vercel.app,http://localhost:5173,http://127.0.0.1:5173`
 2. Set `VITE_API_URL` in Netlify or Vercel to your deployed Render backend URL.
+   Current value: `https://truthlens-api-4vou.onrender.com`
 3. Redeploy the frontend after saving `VITE_API_URL`.
 4. Verify `GET /api/health` and one `POST /api/analyze` request from the deployed frontend.

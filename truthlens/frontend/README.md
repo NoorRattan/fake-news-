@@ -3,6 +3,11 @@
 React 18 + Vite + Three.js + Framer Motion + Tailwind CSS.
 Editorial-style analysis UI backed by the TruthLens FastAPI service.
 
+## Live Deployment
+- Frontend: https://truthlens-omega.vercel.app
+- Backend API: https://truthlens-api-4vou.onrender.com
+- Health check: https://truthlens-api-4vou.onrender.com/api/health
+
 ## Prerequisites
 Node.js 18+ and npm
 
@@ -35,6 +40,10 @@ The production bundle is written to `frontend/dist`.
 3. Redeploy after saving the environment variable.
 4. Add the deployed frontend URL to the backend `ALLOWED_ORIGINS` setting in Render, keeping both `http://localhost:5173` and `http://127.0.0.1:5173` for local Vite development.
 
+Current production values:
+- `VITE_API_URL=https://truthlens-api-4vou.onrender.com`
+- Backend `ALLOWED_ORIGINS=https://truthlens-omega.vercel.app,http://localhost:5173,http://127.0.0.1:5173`
+
 ## Deploy to Netlify
 - Base directory: `frontend`
 - Build command: `npm run build`
@@ -46,7 +55,7 @@ The production bundle is written to `frontend/dist`.
 ## Deploy to Vercel
 - Framework preset: `Vite`
 - Root directory: `frontend`
-- Environment variable: `VITE_API_URL=https://your-backend.onrender.com`
+- Environment variable: `VITE_API_URL=https://truthlens-api-4vou.onrender.com`
 - Redeploy after changing environment variables
 - `vercel.json` handles SPA routing automatically
 
