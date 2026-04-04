@@ -286,3 +286,94 @@ img, video, canvas { max-width: 100%; display: block; }
 @media (max-width: 480px) {
   .editorial-container { padding: 0 12px; }
 }
+
+/* ═══════════════════════════════════════════════════
+   TRUTHLENS — PHASE 3 CSS ADDITIONS
+   ═══════════════════════════════════════════════════ */
+
+/* Ensure Bebas Neue, DM Mono, Instrument Serif are loaded */
+/* Add to index.html <head> if not already present:
+   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,400;0,700;1,400&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+*/
+
+/* Loading step active pulse ring */
+@keyframes step-pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(240, 237, 232, 0.5); }
+  70%  { box-shadow: 0 0 0 8px rgba(240, 237, 232, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(240, 237, 232, 0); }
+}
+
+.step-active-dot {
+  animation: step-pulse-ring 1.5s ease-out infinite;
+}
+
+/* Link hover color for corroboration results */
+.corroboration-link:hover {
+  color: #47ff8f !important;
+  text-decoration: underline !important;
+}
+
+/* Responsive: results grid collapses on mobile */
+@media (max-width: 640px) {
+  .verdict-banner-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .flags-tactics-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .reasoning-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .corroboration-results-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .editorial-tagline {
+    display: none !important;
+  }
+  .results-container-padding {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .url-row {
+    flex-direction: column;
+  }
+  .url-row .analyze-btn {
+    width: 100%;
+    height: 48px;
+  }
+}
+
+/* Textarea and input focus ring override — editorial style */
+textarea:focus,
+input[type="text"]:focus {
+  outline: none;
+  border-color: #444444 !important;
+}
+
+/* History tabs scrollbar hide on mobile */
+.history-tabs-bar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.history-tabs-bar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Webkit line clamp cross-browser */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Print styles */
+@media print {
+  .editorial-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}
