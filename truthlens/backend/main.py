@@ -10,6 +10,12 @@ from utils.logger import logger
 
 load_dotenv()
 
+REQUIRED_API_KEYS = {
+    "GROQ_API_KEY": "Groq/Llama AI (primary analysis)",
+    "COHERE_API_KEY": "Cohere Command R AI (fallback analysis)",
+    "SERPER_API_KEY": "Serper web search (corroboration)",
+}
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -17,14 +23,8 @@ async def lifespan(app: FastAPI):
     logger.info("TruthLens API starting up...")
     logger.info("=" * 50)
 
-    required_keys = {
-        "GEMINI_API_KEY": "Google Gemini AI (primary analysis)",
-        "GROQ_API_KEY": "Groq/Llama AI (fallback analysis)",
-        "SERPER_API_KEY": "Serper web search (corroboration)",
-    }
-
     all_keys_present = True
-    for key, description in required_keys.items():
+    for key, description in REQUIRED_API_KEYS.items():
         value = os.getenv(key)
         if value and len(value) > 5:
             logger.info(f"  [OK]      {key} - {description}")

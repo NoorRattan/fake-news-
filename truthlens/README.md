@@ -1,6 +1,6 @@
 # TruthLens
 
-TruthLens is an AI-powered fake news and misinformation detector. It provides both a FastAPI backend and a React/Vite frontend for analyzing text, headlines, and URLs with AI scoring plus web-search corroboration.
+TruthLens is an AI-powered fake news and misinformation detector. It provides both a FastAPI backend and a React/Vite frontend for analyzing text, headlines, and URLs with Groq primary analysis, Cohere fallback, and web-search corroboration.
 
 ## Backend Setup
 1. Clone the repository:
@@ -53,8 +53,8 @@ TruthLens is an AI-powered fake news and misinformation detector. It provides bo
 ## Environment Variables
 | Variable | Description | Where to get it |
 |----------|-------------|-----------------|
-| `GEMINI_API_KEY` | Google Gemini API | [Google AI Studio](https://aistudio.google.com/app/apikey) |
-| `GROQ_API_KEY` | Groq AI Inference | [Groq Console](https://console.groq.com/) |
+| `GROQ_API_KEY` | Groq AI Inference (primary analysis) | [Groq Console](https://console.groq.com/) |
+| `COHERE_API_KEY` | Cohere Command R API (fallback analysis) | [Cohere Dashboard](https://dashboard.cohere.com/api-keys) |
 | `SERPER_API_KEY` | Google Search API | [Serper.dev](https://serper.dev/) |
 | `ALLOWED_ORIGINS` | Comma-separated frontend origins allowed by CORS | Your deployed frontend URL plus localhost entries |
 | `VITE_API_URL` | Frontend API base URL | Your deployed Render backend URL |

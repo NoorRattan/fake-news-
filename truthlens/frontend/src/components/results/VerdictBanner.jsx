@@ -22,6 +22,8 @@ export default function VerdictBanner({ result }) {
 
   return (
     <motion.div
+      initial="hidden"
+      animate="visible"
       variants={{
         hidden: { opacity: 0, x: -20 },
         visible: {

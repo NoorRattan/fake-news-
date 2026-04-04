@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 export default function ReasoningCard({ reasoning, advice }) {
   return (
     <motion.div 
+      initial="hidden"
+      animate="visible"
       variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } } }}
       style={{ maxWidth: 960, margin: '20px auto 0', padding: '0 40px', display: 'grid', gap: '16px' }}
       className="px-[16px] md:px-[40px] grid-cols-1 md:grid-cols-2"

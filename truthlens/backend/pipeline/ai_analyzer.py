@@ -156,6 +156,32 @@ def parse_ai_response(raw_text: str) -> dict:
     return result
 
 
+def extract_cohere_text(response) -> str:
+    message = getattr(response, "message", None)
+    if message is None:
+        raise ValueError("Cohere response missing message payload")
+
+    content = getattr(message, "content", None)
+    if isinstance(content, str):
+        cleaned_text = content.strip()
+        if cleaned_text:
+            return cleaned_text
+    elif isinstance(content, list):
+        text_chunks = []
+        for block in content:
+            text = block.get("text") if isinstance(block, dict) else getattr(block, "text", None)
+            if text:
+                text_chunks.append(text)
+        if text_chunks:
+            return "\n".join(text_chunks).strip()
+
+    text = getattr(message, "text", None)
+    if isinstance(text, str) and text.strip():
+        return text.strip()
+
+    raise ValueError("Cohere response did not include text content")
+
+
 def analyze_with_gemini(user_prompt: str) -> dict:
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
@@ -219,6 +245,37 @@ def analyze_with_groq(user_prompt: str) -> dict:
         raise
 
 
+def analyze_with_cohere(user_prompt: str) -> dict:
+    cohere_api_key = os.environ.get("COHERE_API_KEY")
+    if not cohere_api_key:
+        raise ValueError("COHERE_API_KEY not set")
+
+    try:
+        import cohere
+    except ImportError as exc:
+        raise RuntimeError("cohere package is not installed") from exc
+
+    try:
+        client = cohere.ClientV2(api_key=cohere_api_key)
+        response = client.chat(
+            model="command-r-08-2024",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.2,
+            max_tokens=2048,
+        )
+        result = parse_ai_response(extract_cohere_text(response))
+        logger.info(
+            f"Cohere analysis complete. Verdict: {result['verdict']}, Score: {result['credibility_score']}"
+        )
+        return result
+    except Exception as exc:
+        logger.error(f"Cohere analysis failed: {str(exc)}")
+        raise
+
+
 def analyze_content(
     content: str,
     input_type: str,
@@ -232,13 +289,13 @@ def analyze_content(
     )
 
     try:
-        return analyze_with_gemini(user_prompt)
+        return analyze_with_groq(user_prompt)
     except Exception as exc:
-        logger.warning(f"Gemini failed, falling back to Groq: {str(exc)}")
+        logger.warning(f"Groq failed, falling back to Cohere: {str(exc)}")
         try:
-            return analyze_with_groq(user_prompt)
-        except Exception as groq_exc:
-            logger.error(f"Both AI providers failed. Groq error: {str(groq_exc)}")
+            return analyze_with_cohere(user_prompt)
+        except Exception as cohere_exc:
+            logger.error(f"Both AI providers failed. Cohere error: {str(cohere_exc)}")
             return {
                 "verdict": "Unverifiable",
                 "credibility_score": 0,

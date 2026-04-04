@@ -39,8 +39,8 @@ export default function AboutPage() {
       {
         icon: <Brain className="text-text" size={20} />,
         title: 'AI Analysis',
-        body: 'Gemini performs the primary linguistic analysis, detecting logical inconsistencies, emotional manipulation, and factual implausibility, with Groq as the fast fallback provider.',
-        tagLabel: 'GEMINI - GROQ',
+        body: 'Groq performs the primary linguistic analysis, detecting logical inconsistencies, emotional manipulation, and factual implausibility, with Cohere as the fallback provider.',
+        tagLabel: 'GROQ - COHERE',
       },
       {
         icon: <BarChart3 className="text-text" size={20} />,
@@ -125,7 +125,7 @@ export default function AboutPage() {
               className="font-mono text-base md:text-lg text-text leading-relaxed max-w-lg"
             >
               Paste any news article, URL, or headline. Our multi-layer AI pipeline,
-              powered by Gemini, Groq fallback, and real-time web search, delivers an
+              powered by Groq, Cohere fallback, and real-time web search, delivers an
               instant, explainable verdict on any piece of content.
             </motion.p>
 

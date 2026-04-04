@@ -17,6 +17,8 @@ export function AnalysisProvider({ children }) {
   const timers = useRef([]);
 
   useEffect(() => {
+    mounted.current = true;
+
     try {
       const stored = sessionStorage.getItem('tl_history');
       if (stored) {
@@ -51,6 +53,11 @@ export function AnalysisProvider({ children }) {
 
         if (health?.status === 'ok') {
           setBackendStatus('online');
+
+          if (backendRetryTimer.current) {
+            clearTimeout(backendRetryTimer.current);
+            backendRetryTimer.current = null;
+          }
 
           if (elapsed > 5000) {
             console.log(`[TruthLens] Backend was cold and responded in ${elapsed}ms.`);

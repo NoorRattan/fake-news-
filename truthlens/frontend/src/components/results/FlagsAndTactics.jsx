@@ -9,6 +9,8 @@ export default function FlagsAndTactics({ red_flags, credible_signals, manipulat
   if (!hasRedFlags && !hasTactics && !hasCredible) {
     return (
       <motion.div 
+        initial="hidden"
+        animate="visible"
         variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } } }}
         style={{ maxWidth: 960, margin: '20px auto 0', padding: '0 40px' }}
         className="px-[16px] md:px-[40px]"
@@ -24,6 +26,8 @@ export default function FlagsAndTactics({ red_flags, credible_signals, manipulat
 
   return (
     <motion.div 
+      initial="hidden"
+      animate="visible"
       variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } } }}
       style={{ maxWidth: 960, margin: '20px auto 0', padding: '0 40px', display: 'grid', gap: '16px' }}
       className="px-[16px] md:px-[40px] grid-cols-1 md:grid-cols-2"

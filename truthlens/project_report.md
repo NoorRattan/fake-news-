@@ -50,10 +50,10 @@ Triggering the `/api/analyze` POST endpoint kicks off a highly sophisticated 7-s
 1. **Input Handler (`input_handler.py`)**: Uses REGEX and content heuristics to classify if the string is a URL, a short Headline, or a raw Article body.
 2. **Text Extractor (`content_extractor.py`)**: If the input is a URL, the tool `trafilatura` extracts the core journalistic text natively from the DOM, stripping away advertisements, navigation, and irrelevant scripts to save AI tokens.
 3. **Source Checker (`source_checker.py`)**: Checks the extracted source domain against an internal `FAKE_DOMAINS` array and `CREDIBILITY_DB`. Matches directly influence the AI's final score ceiling.
-4. **Primary AI Analysis (`ai_analyzer.py` via Gemini)**: 
+4. **Primary AI Analysis (`ai_analyzer.py` via Groq / Llama 3.1)**:
    - A highly fortified `SYSTEM_PROMPT` enforces a rigid 0-100 credibility scoring rubric.
    - It demands the LLM map to exact manipulation tactics ("Strawman", "Appeal to Fear") and extract the core factual claims.
-5. **Secondary AI Fallback (Groq / Llama 3)**: If Gemini is unavailable or rate-limited, the pipeline instantly degrades gracefully to Groq inference via `requests.post`, saving the user from a failed request.
+5. **Secondary AI Fallback (Cohere / Command R)**: If Groq is unavailable or rate-limited, the pipeline instantly degrades gracefully to Cohere chat inference, saving the user from a failed request.
 6. **Live Web Corroboration (`web_searcher.py`)**: Isolates the "Key Claims" the AI found in Step 4. Runs concurrent **Serper.dev** API web searches to find actual live context from the current internet proving or debunking the text. If Serper fails, it falls back to a DuckDuckGo browser scraper algorithm.
 7. **Assembly and Cache**: Maps AI insights and Corroboration search arrays into a unified `AnalysisResult` JSON format and caches it via `utils/cache.py` before returning it to the React layer.
 
@@ -75,8 +75,8 @@ The communication layer is simplified strictly to three core endpoints:
 ## 5. Environment Rules & Security
 
 - **`.env` Architecture**: Strict requirement of three core external keys.
-  - `GEMINI_API_KEY`: Google Gemini primary analysis provider.
-  - `GROQ_API_KEY`: Fallback super-fast Llama 3 inference.
+  - `GROQ_API_KEY`: Primary super-fast Llama 3 inference.
+  - `COHERE_API_KEY`: Cohere Command R fallback analysis provider.
   - `SERPER_API_KEY`: Real-time Search Engine Results Page (SERP) API.
 - **CORS Mitigation**: `main.py` uses `CORSMiddleware`, currently allowing local development configurations, but is tied to an `ALLOWED_ORIGINS` environment variable for production lockdown.
 - **Server Safeties**: `main.py` utilizes a startup `<lifespan>` context manager to verify if keys exist on boot, alerting the developer gracefully rather than crashing asynchronously at runtime. 

@@ -18,6 +18,8 @@ export default function CorroborationCard({ corroboration_results }) {
 
   return (
     <motion.div 
+      initial="hidden"
+      animate="visible"
       variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } } }}
       style={{ maxWidth: 960, margin: '20px auto 0', padding: '0 40px' }}
       className="px-[16px] md:px-[40px]"
