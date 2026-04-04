@@ -51,6 +51,7 @@ Judges can use the live deployment directly from the links above. The real `.env
    ```
 
 ## API Endpoints
+
 | Method | Path | Description |
 |--------|------|-------------|
 | `POST` | `/api/analyze` | Submit text to analyze with body `{"input": "..."}` |
@@ -58,15 +59,18 @@ Judges can use the live deployment directly from the links above. The real `.env
 | `GET`  | `/api/history` | Retrieve cached analyses |
 
 ## Environment Variables
+
 | Variable | Description | Where to get it |
 |----------|-------------|-----------------|
-| `GROQ_API_KEY` | Groq AI Inference (primary analysis) | [Groq Console](https://console.groq.com/) |
-| `COHERE_API_KEY` | Cohere Command R API (fallback analysis) | [Cohere Dashboard](https://dashboard.cohere.com/api-keys) |
+| `GEMINI_API_KEY` | Google Gemini AI | [Google AI Studio](https://aistudio.google.com/) |
+| `GROQ_API_KEY` | Groq AI Inference | [Groq Console](https://console.groq.com/) |
+| `COHERE_API_KEY` | Cohere Command R API | [Cohere Dashboard](https://dashboard.cohere.com/api-keys) |
 | `SERPER_API_KEY` | Google Search API | [Serper.dev](https://serper.dev/) |
 | `ALLOWED_ORIGINS` | Comma-separated frontend origins allowed by CORS | Your deployed frontend URL plus localhost entries |
 | `VITE_API_URL` | Frontend API base URL | Your deployed Render backend URL |
 
 ## Deployment
+
 The backend `Procfile` and `render.yaml` are pre-configured for Render. The frontend is set up for either Netlify or Vercel.
 
 ### Production Connection Checklist
