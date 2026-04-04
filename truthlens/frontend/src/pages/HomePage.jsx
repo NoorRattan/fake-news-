@@ -114,145 +114,124 @@ const InputForm = ({ setView }) => {
 
   return (
     <div style={{ maxWidth: 960, margin: '0 auto', padding: '32px 40px 60px 40px' }} className="px-[16px] md:px-[40px]">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
-        <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', color: '#666666', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '10px' }}>
-          PASTE ARTICLE / URL / CLAIM
-        </div>
-      </motion.div>
-
-      <textarea
-        className="analyze-textarea"
-        value={textValue}
-        onChange={handleTextChange}
-        placeholder="Paste any news article, social media post, or claim here..."
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ delay: 0.1 }}
         style={{
-          width: '100%',
-          minHeight: '200px',
-          maxHeight: '420px',
-          resize: 'vertical',
-          background: '#141414',
-          border: '1px solid #222222',
-          borderRadius: 0,
-          color: '#f0ede8',
-          fontFamily: '"DM Mono", monospace',
-          fontSize: '13px',
-          lineHeight: 1.7,
-          padding: '16px',
-          outline: 'none',
-          boxSizing: 'border-box',
-          transition: 'border-color 0.15s ease'
+          background: 'rgba(20, 20, 20, 0.4)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          borderRadius: '8px',
+          padding: '32px',
+          boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5)',
         }}
-        onFocus={(e) => e.target.style.borderColor = '#444444'}
-        onBlur={(e) => e.target.style.borderColor = '#222222'}
-      />
-
-      <div style={{ textAlign: 'right', fontFamily: '"DM Mono", monospace', fontSize: '10px', marginTop: '6px', color: textValue.length >= 50000 ? '#ff4747' : textValue.length >= 40000 ? '#ff9147' : '#666666' }}>
-        {textValue.length} / 50,000 characters
-      </div>
-
-      <AnimatePresence>
-        {textValue.length > 0 && textValue.trim().length < 150 && !textValue.startsWith('http') && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            style={{ display: 'inline-block', marginTop: '6px', border: '1px solid #ff9147', color: '#ff9147', fontFamily: '"DM Mono", monospace', fontSize: '10px', padding: '3px 8px', borderRadius: 0, textTransform: 'uppercase', letterSpacing: '1px' }}
-          >
-            ✦ ANALYZING AS SHORT CLAIM
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div style={{ margin: '20px 0', borderTop: '1px solid #222222' }} />
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-        <input
-          type="text"
-          value={urlValue}
-          onChange={handleUrlChange}
-          onBlur={() => validateUrl(urlValue)}
-          placeholder="Or enter a URL — https://..."
+      >
+        <div style={{ opacity: 1 }}>
+          <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', color: 'rgb(102, 102, 102)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '10px' }}>
+            PASTE ARTICLE / URL / CLAIM
+          </div>
+        </div>
+        
+        <textarea
+          className="analyze-textarea"
+          value={textValue}
+          onChange={handleTextChange}
+          placeholder="Paste any news article, social media post, or claim here..."
           style={{
-            flex: 1,
-            minWidth: '200px',
-            height: '44px',
-            background: '#141414',
-            border: `1px solid ${urlError ? '#ff4747' : '#222222'}`,
-            borderRadius: 0,
-            color: '#f0ede8',
-            fontFamily: '"DM Mono", monospace',
-            fontSize: '12px',
-            padding: '0 14px',
-            outline: 'none'
+            width: '100%', minHeight: '200px', maxHeight: '420px', resize: 'vertical',
+            background: 'rgba(10, 10, 10, 0.6)', border: '1px solid rgba(68, 68, 68, 0.5)', borderRadius: '4px',
+            color: 'rgb(240, 237, 232)', fontFamily: '"DM Mono", monospace', fontSize: '13px', lineHeight: 1.7,
+            padding: '16px', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s ease'
           }}
-          onFocus={(e) => { if (!urlError) e.target.style.borderColor = '#444444' }}
+          onFocus={(e) => e.target.style.borderColor = 'rgba(240, 237, 232, 0.3)'}
+          onBlur={(e) => e.target.style.borderColor = 'rgba(68, 68, 68, 0.5)'}
         />
         
-        <motion.button
-          onClick={handleSubmit}
-          whileHover={{ scale: 1.02, backgroundColor: '#47ff8f', color: '#0d0d0d' }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ duration: 0.15 }}
-          style={{
-            height: '44px',
-            padding: '0 24px',
-            background: '#f0ede8',
-            color: '#0d0d0d',
-            border: 'none',
-            borderRadius: 0,
-            fontFamily: '"Bebas Neue", sans-serif',
-            fontSize: '18px',
-            letterSpacing: '2px',
-            cursor: 'pointer',
-            textTransform: 'uppercase',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          ANALYZE
-        </motion.button>
-      </div>
-
-      {urlError && <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', color: '#ff4747', marginTop: '6px' }}>{urlError}</div>}
-      {submitError && <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '11px', color: '#ff4747', marginTop: '8px' }}>{submitError}</div>}
-
-      <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-        <span style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', color: '#666666', marginRight: '4px' }}>Try:</span>
-        {examples.map((ex, i) => (
-          <button
-            key={i}
-            onClick={() => handleExample(ex.text)}
-            style={{
-              border: '1px solid #333333',
-              background: 'transparent',
-              color: '#666666',
-              fontFamily: '"DM Mono", monospace',
-              fontSize: '10px',
-              padding: '5px 12px',
-              borderRadius: 0,
-              cursor: 'pointer',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseOver={(e) => { e.target.style.borderColor = '#f0ede8'; e.target.style.color = '#f0ede8'; }}
-            onMouseOut={(e) => { e.target.style.borderColor = '#333333'; e.target.style.color = '#666666'; }}
-          >
-            {ex.label}
-          </button>
-        ))}
-      </div>
-
-      {error && (
-        <div style={{ marginTop: '20px', borderLeft: '3px solid #ff4747', padding: '12px 16px', background: 'rgba(255,71,71,0.06)' }}>
-          <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '12px', color: '#ff4747' }}>{error}</div>
-          <button
-            onClick={clearResult}
-            style={{ marginTop: '8px', background: 'transparent', border: 'none', fontFamily: '"DM Mono", monospace', fontSize: '10px', color: '#666666', cursor: 'pointer', padding: 0 }}
-          >
-            ✕ Dismiss
-          </button>
+        <div style={{ textAlign: 'right', fontFamily: '"DM Mono", monospace', fontSize: '10px', marginTop: '6px', color: textValue.length >= 50000 ? '#ff4747' : 'rgb(102, 102, 102)' }}>
+          {textValue.length} / 50,000 characters
         </div>
-      )}
+
+        <AnimatePresence>
+          {textValue.length > 0 && textValue.trim().length < 150 && !textValue.startsWith('http') && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+              style={{ display: 'inline-block', marginTop: '6px', border: '1px solid #ff9147', color: '#ff9147', fontFamily: '"DM Mono", monospace', fontSize: '10px', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}
+            >
+              ✦ ANALYZING AS SHORT CLAIM
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div style={{ margin: '24px 0', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}></div>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <input
+            type="text"
+            value={urlValue}
+            onChange={handleUrlChange}
+            onBlur={() => validateUrl(urlValue)}
+            placeholder="Or enter a URL — https://..."
+            style={{
+              flex: '1 1 0%', minWidth: '200px', height: '48px',
+              background: 'rgba(10, 10, 10, 0.6)', border: `1px solid ${urlError ? '#ff4747' : 'rgba(68, 68, 68, 0.5)'}`, borderRadius: '4px',
+              color: 'rgb(240, 237, 232)', fontFamily: '"DM Mono", monospace', fontSize: '12px', padding: '0 16px', outline: 'none',
+              transition: 'border-color 0.15s ease'
+            }}
+            onFocus={(e) => { if (!urlError) e.target.style.borderColor = 'rgba(240, 237, 232, 0.3)' }}
+          />
+          <motion.button
+            onClick={handleSubmit}
+            whileHover={{ scale: 1.02, backgroundColor: '#ffffff', color: '#000000' }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.15 }}
+            style={{
+              height: '48px', padding: '0 32px',
+              background: 'rgb(240, 237, 232)', color: 'rgb(13, 13, 13)', border: 'none', borderRadius: '4px',
+              fontFamily: '"Bebas Neue", sans-serif', fontSize: '20px', letterSpacing: '2px', cursor: 'pointer',
+              textTransform: 'uppercase', whiteSpace: 'nowrap',
+              boxShadow: '0 4px 14px rgba(240, 237, 232, 0.2)'
+            }}
+          >
+            ANALYZE
+          </motion.button>
+        </div>
+
+        {urlError && <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', color: '#ff4747', marginTop: '6px' }}>{urlError}</div>}
+        {submitError && <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '11px', color: '#ff4747', marginTop: '8px' }}>{submitError}</div>}
+
+        <div style={{ marginTop: '24px', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', color: 'rgb(102, 102, 102)', marginRight: '4px' }}>Try:</span>
+          {examples.map((ex, i) => (
+            <button
+              key={i}
+              onClick={() => handleExample(ex.text)}
+              style={{
+                border: '1px solid rgba(81, 81, 81, 0.5)', background: 'transparent', color: 'rgb(150, 150, 150)',
+                fontFamily: '"DM Mono", monospace', fontSize: '10px', padding: '6px 14px', borderRadius: '4px',
+                cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px', transition: 'all 0.15s ease'
+              }}
+              onMouseOver={(e) => { e.target.style.borderColor = 'rgba(240, 237, 232, 0.5)'; e.target.style.color = '#f0ede8'; e.target.style.background = 'rgba(255, 255, 255, 0.03)' }}
+              onMouseOut={(e) => { e.target.style.borderColor = 'rgba(81, 81, 81, 0.5)'; e.target.style.color = 'rgb(150, 150, 150)'; e.target.style.background = 'transparent' }}
+            >
+              {ex.label}
+            </button>
+          ))}
+        </div>
+
+        {error && (
+          <div style={{ marginTop: '24px', borderLeft: '3px solid #ff4747', padding: '12px 16px', background: 'rgba(255,71,71,0.06)', borderRadius: '0 4px 4px 0' }}>
+            <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '12px', color: '#ff4747' }}>{error}</div>
+            <button
+              onClick={clearResult}
+              style={{ marginTop: '8px', background: 'transparent', border: 'none', fontFamily: '"DM Mono", monospace', fontSize: '10px', color: '#bbbbbb', cursor: 'pointer', padding: 0 }}
+            >
+              ✕ Dismiss
+            </button>
+          </div>
+        )}
+      </motion.div>
     </div>
   );
 };

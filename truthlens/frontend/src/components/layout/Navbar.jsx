@@ -50,6 +50,20 @@ export default function Navbar() {
           {/* RIGHT — Navigation links + CTA */}
           <div className="hidden sm:flex items-center" style={{ gap: '32px' }}>
             <NavLink 
+              to="/" 
+              style={({ isActive }) => ({
+                fontFamily: '"DM Mono", monospace',
+                fontSize: '11px',
+                letterSpacing: '1.5px',
+                textTransform: 'uppercase',
+                color: isActive ? 'var(--text)' : 'var(--muted)',
+                textDecoration: isActive ? 'underline' : 'none'
+              })}
+              className="hover:text-[var(--text)] transition-colors"
+            >
+              Home
+            </NavLink>
+            <NavLink 
               to="/about" 
               style={({ isActive }) => ({
                 fontFamily: '"DM Mono", monospace',
@@ -108,6 +122,23 @@ export default function Navbar() {
               zIndex: 90
             }}
           >
+            <NavLink 
+              to="/"
+              style={{
+                fontFamily: '"DM Mono", monospace',
+                fontSize: '14px',
+                color: 'var(--muted)',
+                display: 'block',
+                paddingTop: '12px',
+                paddingBottom: '12px',
+                borderBottom: '1px solid var(--border)',
+                textDecoration: 'none'
+              }}
+              className="hover:text-[var(--text)]"
+              onClick={() => setMenuOpen(false)}
+            >
+              Home
+            </NavLink>
             <NavLink 
               to="/about"
               style={{

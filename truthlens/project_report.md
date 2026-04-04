@@ -8,83 +8,68 @@
 ## 2. Technical Stack
 
 ### **Backend (Core Logic & API)**
-The backend is built with **Python** using a high-performance asynchronous framework.
+The backend is built with **Python**, functioning as a high-performance asynchronous pipeline.
 - **Framework**: [FastAPI](https://fastapi.tiangolo.com/) (Asynchronous REST API)
 - **Server**: [Uvicorn](https://www.uvicorn.org/) (ASGI server)
 - **AI Integration**: 
     - **Primary**: Google Gemini 1.5 Pro (via `google-genai`)
-    - **Secondary/Fallback**: Groq (Llama 3 70B/8B) for high-speed inference
+    - **Secondary/Fallback**: Groq (Llama 3) for high-speed inference
 - **Search & Verification**:
     - **Serper.dev**: Google Search API for real-time fact-checking
-    - **DuckDuckGo**: Fallback search provider
 - **Web Content Extraction**:
-    - `trafilatura`: For clean article extraction from URLs
-    - `BeautifulSoup4` & `lxml`: For HTML parsing
+    - `trafilatura`: For robust and clean article extraction from URLs
 - **Data Validation**: `Pydantic v2` for strict request/response schema modeling
-- **Networking**: `httpx`, `aiohttp`, and `requests` for concurrent API calls
 
 ### **Frontend (User Interface)**
-A sleek, modern, and responsive interface designed for high user engagement.
-- **Architecture**: Vanilla HTML5, CSS3, and Modern JavaScript (ES6+)
+A sleek, modern, and responsive interactive web application built with a modern component-based architecture.
+- **Framework**: **React 18** and **Vite** (replaces the previously stated Vanilla JS architecture)
+- **Routing**: `react-router-dom`
 - **Styling**: 
-    - Custom CSS with **glassmorphism** and **claymorphism** aesthetics
-    - Dynamic animations using CSS transitions and HTML5 Canvas
-- **Visualizations**: 
-    - `Chart.js`: For rendering credibility scores and bias distributions
-- **State Management**: Frontend-driven session state for analysis history
-- **Interactive Elements**:
-    - `wavy-background.js`: Custom canvas-based ambient backgrounds
-    - `renderer.js`: Dynamic DOM manipulation for real-time result updates
+    - **Tailwind CSS** combined with custom definitions for glassmorphism aesthetics.
+- **3D & Visualizations**: 
+    - Fully dynamic, utilizing **Three.js** via `@react-three/drei` and `@react-three/fiber` for immersive 3D backgrounds and elements.
+    - **Framer Motion** (`framer-motion`) handles seamless micro-animations and page transitions.
+- **State Management**: React Context APIs and hooks.
 
 ---
 
 ## 3. System Architecture
 The application follows a decoupled client-server architecture:
 
-1.  **Request Layer**: The frontend captures user input (Text, Headline, or URL) and transmits it via a `POST` request to the `/api/analyze` endpoint.
-2.  **Scraping Engine**: If a URL is provided, the backend utilizes `trafilatura` to bypass ads/clutter and extract the core article text.
+1.  **Request Layer**: The React frontend captures user input (Text, Headline, or URL) and transmits it via an API `POST` request to the backend `/api/analyze` endpoint.
+2.  **Scraping Engine**: If a URL is provided, the backend utilizes `trafilatura` to safely extract text.
 3.  **Corroboration Pipeline**: 
-    - Extracts key claims from the content.
-    - Performed parallel searches via Google/DuckDuckGo to find supporting or contradicting evidence.
+    - The backend performs parallel searches via Serper to find supporting or contradicting evidence.
 4.  **AI Intelligence Layer**:
-    - Content is analyzed for cognitive biases, logical fallacies, and manipulation tactics.
-    - Compares claims against search results to determine a factual verdict.
+    - Content is sent to the LLM (Gemini or Groq) to be analyzed for cognitive biases, manipulation tactics, and compared against live search results.
 5.  **Scoring & Enrichment**: 
-    - Calculates a **Credibility Score (0-100)**.
-    - Cross-references the domain against a database of known biased sources.
-6.  **Response Layer**: Returns a comprehensive JSON payload containing the verdict, reasoning, red flags, and cited sources.
+    - System calculates a Credibility Score and cross-references domains.
+6.  **Response Layer**: JSON payload is pushed back to the frontend where the React components immediately visualize the verdict with animated charts and breakdowns.
 
 ---
 
-## 4. Current Progress (Completed Features)
+## 4. Current Progress & Implementation Status
 
-### **Backend Milestone Completion**
-- [x] **Unified API**: Single endpoint handles text, headlines, and URLs.
-- [x] **Resilient AI Pipeline**: Implementation of primary (Gemini) and secondary (Groq) models with automatic failover.
-- [x] **Smart Scraping**: Robust URL extraction that handles most news sites.
-- [x] **Real-time Web Search**: Integration with Serper API for live fact-checking.
-- [x] **Source Bias Database**: Integrated check for domain-level credibility ratings.
-- [x] **Health Monitoring**: Dedicated uptime and status tracking.
+### **Backend Implementation**
+- [x] **Unified API**: Solid structural endpoints with modular routing (`routers/analyze.py`).
+- [x] **Resilient AI Pipeline**: Functional fallback mechanism handling Gemini defaults.
+- [x] **Smart Scraping**: `trafilatura` correctly handles URL extraction.
+- [x] **Initialization Safety**: Automatically verifies presence of API keys (`main.py`).
 
-### **Frontend Milestone Completion**
-- [x] **Responsive Core Layout**: Optimized for both desktop and mobile devices.
-- [x] **Dynamic Results Engine**: Real-time rendering of complex analysis objects without page reloads.
-- [x] **Themed UI**: Dark-mode primary interface with glassmorphic cards.
-- [x] **Credibility Meter**: Circular progress/gauge charts for visual score representation.
-- [x] **Analysis History**: Session-persistent sidebar showing previous checks.
-- [x] **Interactive Examples**: Pre-set "Try this" buttons for demonstration.
+### **Frontend Implementation**
+- [x] **Modern Tooling Upgrade**: Upgraded to a Vite + React workflow.
+- [x] **Dependency Issues Resolved**: Handled Vite version mismatch constraints successfully.
+- [x] **UI Elements**: Component suite including specialized rendering blocks (`HealthCheck.jsx`, `HistoryCard.jsx`, `CustomCursor.jsx`).
+- [x] **Animation Loop**: 3D and Framer Motion integration functional.
 
 ---
 
 ## 5. Deployment & DevOps
-- **Deployment Strategy**: Ready for **Render.com** or **Heroku** (includes `Procfile` and `render.yaml`).
-- **Environment Management**: Secure handling of API keys via `.env` configurations.
-- **Testing**: Includes a comprehensive `smoke_test.py` for validating API integrity and pipeline performance.
+- **Deployment Strategy**: Includes configurations (`render.yaml`, `Procfile`) for automated deployment workflows on services like Render.
+- **Environment Management**: Robust key management, `.env` file templates are well defined.
 
 ---
 
-## 6. Summary of Already Done Items
-- **Infrastructure**: Full FastAPI project structure with modular routers and pipelines.
-- **AI Core**: Prompt engineering for fake news detection is finalized.
-- **UI/UX**: The entire dashboard UI is functional and integrated with the backend.
-- **Search**: The fact-checking loop is fully operational.
+## 6. Actionable Next Steps
+- **Start Services**: Ensure both the Vite frontend server (`npm run dev`) and Uvicorn backend server (`uvicorn main:app --reload`) are running concurrently.
+- **Configure Env Variables**: Verify that `backend/.env` is fully populated with Gemini/Groq/Serper API keys before testing endpoints.

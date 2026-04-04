@@ -107,10 +107,6 @@ body {
 
 img, video, canvas { max-width: 100%; display: block; }
 
-@media (pointer: fine) {
-  * { cursor: none !important; }
-}
-
 @media (max-width: 640px) {
   .editorial-card { padding: 16px; }
   h1 { font-size: clamp(2rem, 8vw, 3rem); }
