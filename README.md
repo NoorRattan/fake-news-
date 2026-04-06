@@ -1,70 +1,49 @@
-# TruthLens Frontend
+# Fake-news-Detector (TruthLens)
 
-React 18 + Vite + Three.js + Framer Motion + Tailwind CSS.
-Editorial-style analysis UI backed by the TruthLens FastAPI service.
+TruthLens is an AI-powered fake news and misinformation detection platform. It uses advanced language models to analyze news articles, headlines, and URLs to provide a credibility score and detailed reasoning.
+
+## Project Structure
+
+This repository is organized into the following components:
+
+- **[truthlens/backend](truthlens/backend)**: A FastAPI-based backend that handles the analysis pipeline, integrating with Google Gemini AI for advanced misinformation detection.
+- **[truthlens/frontend](truthlens/frontend)**: A modern React 18 frontend built with Vite, featuring an editorial-style UI with Three.js visualizations and Framer Motion animations.
+
+## Getting Started
+
+### Backend Setup
+1. Navigate to the backend directory:
+   ```bash
+   cd truthlens/backend
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Set up your `.env` file with the required API keys (GitHub/Gemini).
+4. Run the server:
+   ```bash
+   uvicorn main:app --reload
+   ```
+
+### Frontend Setup
+1. Navigate to the frontend directory:
+   ```bash
+   cd truthlens/frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up your `.env.local` to point to the backend API.
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
 ## Live Deployment
-- Frontend: https://truthlens-omega.vercel.app
-- Backend API: https://truthlens-api-4vou.onrender.com
-- Health check: https://truthlens-api-4vou.onrender.com/api/health
+- **Frontend**: [https://truthlens-omega.vercel.app](https://truthlens-omega.vercel.app)
+- **Backend API**: [https://truthlens-api-4vou.onrender.com](https://truthlens-api-4vou.onrender.com)
 
-## Prerequisites
-Node.js 18+ and npm
-
-## Development Setup
-```bash
-cd frontend
-npm install
-cp .env.example .env.local
-npm run dev
-```
-
-Set `frontend/.env.local` to:
-
-```bash
-VITE_API_URL=http://localhost:8000
-```
-
-If `VITE_API_URL` is omitted in development, the Vite dev server proxies `/api/*` to `http://localhost:8000`.
-
-## Production Build
-```bash
-npm run build
-```
-
-The production bundle is written to `frontend/dist`.
-
-## Production Connection
-1. Deploy the backend first and copy its Render URL.
-2. Set `VITE_API_URL=https://your-backend.onrender.com` in Netlify or Vercel.
-3. Redeploy after saving the environment variable.
-4. Add the deployed frontend URL to the backend `ALLOWED_ORIGINS` setting in Render, keeping both `http://localhost:5173` and `http://127.0.0.1:5173` for local Vite development.
-
-Current production values:
-- `VITE_API_URL=https://truthlens-api-4vou.onrender.com`
-- Backend `ALLOWED_ORIGINS=https://truthlens-omega.vercel.app,http://localhost:5173,http://127.0.0.1:5173`
-
-## Deploy to Netlify
-- Base directory: `frontend`
-- Build command: `npm run build`
-- Publish directory: `dist`
-- Environment variable: `VITE_API_URL=https://your-backend.onrender.com`
-- Redeploy after changing environment variables
-- `public/_redirects` handles SPA routing automatically
-
-## Deploy to Vercel
-- Framework preset: `Vite`
-- Root directory: `frontend`
-- Environment variable: `VITE_API_URL=https://truthlens-api-4vou.onrender.com`
-- Redeploy after changing environment variables
-- `vercel.json` handles SPA routing automatically
-
-## Environment Variables
-| Variable | Description | Example |
-|---|---|---|
-| `VITE_API_URL` | Backend API base URL used by the browser bundle | `https://truthlens-api.onrender.com` |
-
-## Routes
-- `/` - Analyzer home page
-- `/about` - Product and pipeline overview
-- `/history` - Session analysis history
+## Repository
+- **Current Home**: [https://github.com/calmcode47/Fake-news-Detector.git](https://github.com/calmcode47/Fake-news-Detector.git)

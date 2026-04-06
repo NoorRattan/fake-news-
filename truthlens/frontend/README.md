@@ -1,70 +1,42 @@
-# TruthLens Frontend
+# TruthLens Frontend (Fake-news-Detector)
 
-React 18 + Vite + Three.js + Framer Motion + Tailwind CSS.
-Editorial-style analysis UI backed by the TruthLens FastAPI service.
+The modern, editorial-style analysis interface for the TruthLens misinformation detection platform. Built with a premium aesthetic focusing on clean typography, high contrast, and dynamic visualizations.
+
+## Tech Stack
+- **Framework**: React 18 + Vite
+- **Visuals**: Three.js (Mini Globe, Floating Particles)
+- **Animation**: Framer Motion
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
 
 ## Live Deployment
-- Frontend: https://truthlens-omega.vercel.app
-- Backend API: https://truthlens-api-4vou.onrender.com
-- Health check: https://truthlens-api-4vou.onrender.com/api/health
+- **Frontend**: [https://truthlens-omega.vercel.app](https://truthlens-omega.vercel.app)
+- **Backend API**: [https://truthlens-api-4vou.onrender.com](https://truthlens-api-4vou.onrender.com)
 
 ## Prerequisites
-Node.js 18+ and npm
+- Node.js 18+
+- npm
 
 ## Development Setup
 ```bash
-cd frontend
+# From the project root
+cd truthlens/frontend
 npm install
 cp .env.example .env.local
 npm run dev
 ```
 
-Set `frontend/.env.local` to:
-
+### Environment Configuration
+Set `truthlens/frontend/.env.local` to point to your local or production backend:
 ```bash
 VITE_API_URL=http://localhost:8000
 ```
 
-If `VITE_API_URL` is omitted in development, the Vite dev server proxies `/api/*` to `http://localhost:8000`.
+## Features
+- **Real-time Analysis**: Interactive submission with state-driven UI.
+- **Visual Evidence**: Interactive globe and particle systems for analytical context.
+- **Session History**: Persistent local or server-side analysis logs.
+- **Editorial Design**: Zero border-radius, high-contrast dark mode for a premium feel.
 
-## Production Build
-```bash
-npm run build
-```
-
-The production bundle is written to `frontend/dist`.
-
-## Production Connection
-1. Deploy the backend first and copy its Render URL.
-2. Set `VITE_API_URL=https://your-backend.onrender.com` in Netlify or Vercel.
-3. Redeploy after saving the environment variable.
-4. Add the deployed frontend URL to the backend `ALLOWED_ORIGINS` setting in Render, keeping both `http://localhost:5173` and `http://127.0.0.1:5173` for local Vite development.
-
-Current production values:
-- `VITE_API_URL=https://truthlens-api-4vou.onrender.com`
-- Backend `ALLOWED_ORIGINS=https://truthlens-omega.vercel.app,http://localhost:5173,http://127.0.0.1:5173`
-
-## Deploy to Netlify
-- Base directory: `frontend`
-- Build command: `npm run build`
-- Publish directory: `dist`
-- Environment variable: `VITE_API_URL=https://your-backend.onrender.com`
-- Redeploy after changing environment variables
-- `public/_redirects` handles SPA routing automatically
-
-## Deploy to Vercel
-- Framework preset: `Vite`
-- Root directory: `frontend`
-- Environment variable: `VITE_API_URL=https://truthlens-api-4vou.onrender.com`
-- Redeploy after changing environment variables
-- `vercel.json` handles SPA routing automatically
-
-## Environment Variables
-| Variable | Description | Example |
-|---|---|---|
-| `VITE_API_URL` | Backend API base URL used by the browser bundle | `https://truthlens-api.onrender.com` |
-
-## Routes
-- `/` - Analyzer home page
-- `/about` - Product and pipeline overview
-- `/history` - Session analysis history
+## Deployment Guides
+For detailed deployment instructions to Vercel or Netlify, please refer to the main [README.md](../../README.md) in the project root.
