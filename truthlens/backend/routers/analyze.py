@@ -41,3 +41,10 @@ def health_endpoint():
 @router.get("/history")
 def history_endpoint():
     return {"analyses": cache.get_all()}
+
+
+@router.delete("/history")
+def clear_history_endpoint():
+    cache.clear()
+    logger.info("History cache cleared.")
+    return {"status": "ok"}

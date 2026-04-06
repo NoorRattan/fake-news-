@@ -84,3 +84,8 @@ export async function getServerHistory() {
   const response = await api.get('/api/history');
   return response.data.analyses;
 }
+
+export async function clearServerHistory() {
+  ensureApiBaseUrl();
+  await api.delete('/api/history');
+}
