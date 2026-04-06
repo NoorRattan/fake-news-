@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { isToday, isYesterday, format } from 'date-fns';
 
 import { useAnalysis } from '../context/AnalysisContext';
-import { getServerHistory } from '../services/api';
+import { clearServerHistory, getServerHistory } from '../services/api';
 import PageTransition from '../components/PageTransition';
 import HistoryCard from '../components/HistoryCard';
 
@@ -16,6 +16,7 @@ export default function HistoryPage() {
   const [serverHistory, setServerHistory] = useState([]);
   const [loadingServer, setLoadingServer] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [clearingHistory, setClearingHistory] = useState(false);
 
   useEffect(() => {
     document.title = "History — TruthLens";
@@ -78,9 +79,19 @@ export default function HistoryPage() {
     return groups;
   }, [allHistory]);
 
-  const handleClearConfirm = () => {
+  const handleClearConfirm = async () => {
+    setClearingHistory(true);
     clearHistory();
-    setConfirmClear(false);
+    setServerHistory([]);
+
+    try {
+      await clearServerHistory();
+    } catch (e) {
+      // Keep the UI cleared even if the server request fails.
+    } finally {
+      setConfirmClear(false);
+      setClearingHistory(false);
+    }
   };
 
   return (
@@ -119,8 +130,9 @@ export default function HistoryPage() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
+                      disabled={clearingHistory}
                       onClick={() => setConfirmClear(true)}
-                      className="editorial-btn text-xs text-[var(--red)] border-[var(--red)] hover:bg-[var(--red)] hover:text-bg flex items-center gap-2"
+                      className="editorial-btn text-xs text-[var(--red)] border-[var(--red)] hover:bg-[var(--red)] hover:text-bg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Trash2 size={12} /> CLEAR ALL
                     </motion.button>
@@ -133,11 +145,19 @@ export default function HistoryPage() {
                       className="flex items-center gap-2 border border-[var(--red)] bg-surface px-3 py-1.5"
                     >
                       <span className="font-mono text-[10px] text-[var(--red)] mr-2 uppercase">Are you sure?</span>
-                      <button onClick={handleClearConfirm} className="font-mono font-bold text-[10px] text-[var(--red)] px-2 hover:underline uppercase">
-                        YES, CLEAR
+                      <button
+                        onClick={handleClearConfirm}
+                        disabled={clearingHistory}
+                        className="font-mono font-bold text-[10px] text-[var(--red)] px-2 hover:underline uppercase disabled:opacity-50 disabled:no-underline"
+                      >
+                        {clearingHistory ? 'CLEARING...' : 'YES, CLEAR'}
                       </button>
                       <span className="text-[var(--red)]/30">|</span>
-                      <button onClick={() => setConfirmClear(false)} className="font-mono text-[10px] text-muted hover:text-text px-2 transition-colors uppercase">
+                      <button
+                        onClick={() => setConfirmClear(false)}
+                        disabled={clearingHistory}
+                        className="font-mono text-[10px] text-muted hover:text-text px-2 transition-colors uppercase disabled:opacity-50"
+                      >
                         CANCEL
                       </button>
                     </motion.div>
