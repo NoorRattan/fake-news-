@@ -1,0 +1,42 @@
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# Dependencies
+node_modules/
+package-lock.json (if in root, but usually it's in subfolders)
+yarn.lock
+pnpm-lock.yaml
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/
+.next/
+out/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+.env
+
+# Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Project specific
+TTppt truth lens.pptx
+truthlens_frontend_report.md
