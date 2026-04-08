@@ -7,6 +7,7 @@ from utils.cache import cache
 from pipeline.input_handler import classify_input
 from pipeline.content_extractor import extract_from_url
 from pipeline.ai_analyzer import analyze_content
+from pipeline.image_analyzer import analyze_article_images
 from pipeline.web_searcher import search_claims
 from pipeline.source_checker import check_source_credibility, CREDIBILITY_DB, FAKE_DOMAINS
 
@@ -64,6 +65,7 @@ def _build_error_result(analysis_id: str, input_type: str, start_time: float, er
         "cited_sources": [],
         "corroboration_results": [],
         "article_metadata": None,
+        "image_analysis": [],
     }
 
 async def run_pipeline(raw_input: str) -> dict:
@@ -93,6 +95,8 @@ async def run_pipeline(raw_input: str) -> dict:
     article_metadata = None
     domain = ""
     extracted_text = input_result["content"]
+    images_to_analyze = []
+    image_analysis_results = []
     
     if input_result["type"] == "URL":
         try:
@@ -101,6 +105,7 @@ async def run_pipeline(raw_input: str) -> dict:
             pipeline_state["step_2_extract"] = {"success": True, "data": extract_result, "error": None}
             extracted_text = extract_result["text"]
             domain = extract_result.get("domain", "")
+            images_to_analyze = extract_result.get("images", [])
             article_metadata = {
                 "title": extract_result.get("title", ""),
                 "date": extract_result.get("date", ""),
@@ -146,6 +151,13 @@ async def run_pipeline(raw_input: str) -> dict:
         return _build_error_result(analysis_id, input_result.get("type", "ARTICLE_TEXT"), start_time, f"AI analysis failed: {str(e)}")
         
     # Steps 5 & 6 — Run Concurrently:
+    if input_result.get("type") == "URL" and images_to_analyze:
+        try:
+            image_analysis_results = await analyze_article_images(images_to_analyze)
+        except Exception as e:
+            image_analysis_results = []
+            logger.warning(f"Image analysis failed: {e}")
+
     key_claims = ai_result.get("key_claims", [])
     
     try:
@@ -197,6 +209,7 @@ async def run_pipeline(raw_input: str) -> dict:
         "cited_sources": source_result.get("cited_sources", []),
         "corroboration_results": search_result.get("corroboration_results", []),
         "article_metadata": article_metadata,
+        "image_analysis": image_analysis_results,
     }
     
     logger.info(

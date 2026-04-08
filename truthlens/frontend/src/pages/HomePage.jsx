@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import PageTransition from '../components/PageTransition';
 import CorroborationCard from '../components/results/CorroborationCard';
 import FlagsAndTactics from '../components/results/FlagsAndTactics';
+import ImageAnalysisCard from '../components/results/ImageAnalysisCard';
 import ReasoningCard from '../components/results/ReasoningCard';
 import SourcesCard from '../components/results/SourcesCard';
 import SummaryCard from '../components/results/SummaryCard';
@@ -530,6 +531,7 @@ function ResultsDashboard({ result, isSample = false, copyLabel, shareLabel, onC
       )}
 
       <CorroborationCard corroboration_results={result.corroboration_results} />
+      <ImageAnalysisCard image_analysis={result.image_analysis} />
     </div>
   );
 }

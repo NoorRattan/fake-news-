@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from typing import List, Optional
+from typing import Any, List, Optional
 
 class DomainInfo(BaseModel):
     model_config = ConfigDict(extra='ignore')
@@ -50,6 +50,7 @@ class AnalysisResult(BaseModel):
     cited_sources: List[CitedSource] = []
     corroboration_results: List[ClaimCorroboration] = []
     article_metadata: Optional[ArticleMetadata] = None
+    image_analysis: Optional[List[Any]] = []
 
 class ErrorResponse(BaseModel):
     model_config = ConfigDict(extra='ignore')
