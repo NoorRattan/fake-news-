@@ -1,4 +1,4 @@
-# TruthLens Frontend (Fake-news-Detector)
+# TruthLens Frontend
 
 The modern, editorial-style analysis interface for the TruthLens misinformation detection platform. Built with a premium aesthetic focusing on clean typography, high contrast, and dynamic visualizations.
 
