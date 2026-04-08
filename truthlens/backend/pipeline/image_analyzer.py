@@ -40,6 +40,7 @@ SUPPORTED_MEDIA_TYPES = {
     "image/png": "image/png",
     "image/webp": "image/webp",
 }
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
 def _normalize_media_type(content_type: str) -> str | None:
@@ -47,13 +48,22 @@ def _normalize_media_type(content_type: str) -> str | None:
     return SUPPORTED_MEDIA_TYPES.get(normalized_content_type)
 
 
-def _extract_response_text(response) -> str:
-    choices = getattr(response, "choices", None) or []
+def _extract_response_text(response_payload) -> str:
+    if isinstance(response_payload, dict):
+        choices = response_payload.get("choices", [])
+    else:
+        choices = getattr(response_payload, "choices", None) or []
+
     if not choices:
         return ""
 
-    message = getattr(choices[0], "message", None)
-    content = getattr(message, "content", "")
+    first_choice = choices[0]
+    if isinstance(first_choice, dict):
+        message = first_choice.get("message", {})
+        content = message.get("content", "")
+    else:
+        message = getattr(first_choice, "message", None)
+        content = getattr(message, "content", "")
 
     if isinstance(content, str):
         return content.strip()
@@ -110,13 +120,14 @@ def _parse_image_analysis(raw_content: str) -> dict | None:
     }
 
 
-def _request_groq_analysis(base64_string: str, media_type: str, alt_text: str) -> str:
-    from groq import Groq
-
-    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-    response = client.chat.completions.create(
-        model="meta-llama/llama-4-scout-17b-16e-instruct",
-        messages=[
+async def _request_groq_analysis(base64_string: str, media_type: str, alt_text: str) -> str:
+    headers = {
+        "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+        "messages": [
             {
                 "role": "user",
                 "content": [
@@ -131,10 +142,16 @@ def _request_groq_analysis(base64_string: str, media_type: str, alt_text: str) -
                 ],
             }
         ],
-        temperature=0.1,
-        max_tokens=500,
-    )
-    return _extract_response_text(response)
+        "temperature": 0.1,
+        "max_tokens": 500,
+    }
+    timeout = httpx.Timeout(20.0)
+
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        response = await client.post(GROQ_API_URL, headers=headers, json=payload)
+
+    response.raise_for_status()
+    return _extract_response_text(response.json())
 
 
 async def fetch_image_as_base64(url: str) -> tuple | None:
@@ -178,8 +195,7 @@ async def analyze_single_image(image_url: str, alt_text: str = "") -> dict | Non
             return None
 
         base64_string, media_type = image_payload
-        raw_response = await asyncio.to_thread(
-            _request_groq_analysis,
+        raw_response = await _request_groq_analysis(
             base64_string,
             media_type,
             alt_text,
