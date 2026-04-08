@@ -1,10 +1,13 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { analyzeContent, getHealth } from '../services/api';
+import { normalizeAnalysisResult } from '../utils/helpers';
 
 export const AnalysisContext = createContext(null);
+const HISTORY_STORAGE_KEY = 'tl_history';
+const CURRENT_RESULT_STORAGE_KEY = 'tl_current_result';
 
 export function AnalysisProvider({ children }) {
-  const [currentResult, setCurrentResult] = useState(null);
+  const [currentResult, setCurrentResultState] = useState(null);
   const [history, setHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStage, setLoadingStage] = useState('idle');
@@ -20,12 +23,24 @@ export function AnalysisProvider({ children }) {
     mounted.current = true;
 
     try {
-      const stored = sessionStorage.getItem('tl_history');
+      const stored = sessionStorage.getItem(HISTORY_STORAGE_KEY);
       if (stored) {
-        setHistory(JSON.parse(stored));
+        const parsedHistory = JSON.parse(stored);
+        if (Array.isArray(parsedHistory)) {
+          setHistory(parsedHistory.map(normalizeAnalysisResult));
+        }
       }
     } catch (storageError) {
       console.error('Failed to parse history from sessionStorage', storageError);
+    }
+
+    try {
+      const storedCurrentResult = sessionStorage.getItem(CURRENT_RESULT_STORAGE_KEY);
+      if (storedCurrentResult) {
+        setCurrentResultState(normalizeAnalysisResult(JSON.parse(storedCurrentResult)));
+      }
+    } catch (storageError) {
+      console.error('Failed to parse current result from sessionStorage', storageError);
     }
 
     return () => {
@@ -36,6 +51,21 @@ export function AnalysisProvider({ children }) {
       timers.current.forEach(clearTimeout);
     };
   }, []);
+
+  useEffect(() => {
+    try {
+      if (currentResult) {
+        sessionStorage.setItem(
+          CURRENT_RESULT_STORAGE_KEY,
+          JSON.stringify(normalizeAnalysisResult(currentResult))
+        );
+      } else {
+        sessionStorage.removeItem(CURRENT_RESULT_STORAGE_KEY);
+      }
+    } catch (storageError) {
+      console.error('Failed to save current result', storageError);
+    }
+  }, [currentResult]);
 
   useEffect(() => {
     if (hasCheckedBackend.current) return;
@@ -90,10 +120,12 @@ export function AnalysisProvider({ children }) {
   }, []);
 
   const updateHistory = useCallback((newResult) => {
+    const normalizedResult = normalizeAnalysisResult(newResult);
+
     setHistory((previousHistory) => {
-      const updatedHistory = [newResult, ...previousHistory].slice(0, 20);
+      const updatedHistory = [normalizedResult, ...previousHistory].slice(0, 20);
       try {
-        sessionStorage.setItem('tl_history', JSON.stringify(updatedHistory));
+        sessionStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updatedHistory));
       } catch (storageError) {
         console.error('Failed to save history', storageError);
       }
@@ -104,7 +136,7 @@ export function AnalysisProvider({ children }) {
   const analyze = useCallback(
     async (inputValue) => {
       setError(null);
-      setCurrentResult(null);
+      setCurrentResultState(null);
       setIsLoading(true);
 
       timers.current.forEach(clearTimeout);
@@ -144,8 +176,9 @@ export function AnalysisProvider({ children }) {
         const data = await analyzeContent(inputValue);
         if (!mounted.current) return;
 
-        setCurrentResult(data);
-        updateHistory(data);
+        const normalizedData = normalizeAnalysisResult(data);
+        setCurrentResultState(normalizedData);
+        updateHistory(normalizedData);
         setError(null);
       } catch (analysisError) {
         if (!mounted.current) return;
@@ -164,15 +197,20 @@ export function AnalysisProvider({ children }) {
     [updateHistory]
   );
 
+  const setCurrentResult = useCallback((result) => {
+    setCurrentResultState(normalizeAnalysisResult(result));
+  }, []);
+
   const clearResult = useCallback(() => {
-    setCurrentResult(null);
+    setCurrentResultState(null);
     setError(null);
     setLoadingStage('idle');
+    sessionStorage.removeItem(CURRENT_RESULT_STORAGE_KEY);
   }, []);
 
   const clearHistory = useCallback(() => {
     setHistory([]);
-    sessionStorage.removeItem('tl_history');
+    sessionStorage.removeItem(HISTORY_STORAGE_KEY);
   }, []);
 
   return (

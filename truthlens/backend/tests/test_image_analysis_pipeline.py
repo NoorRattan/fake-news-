@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import AsyncMock, patch
 
+from pipeline import content_extractor
 from pipeline import orchestrator
 
 
@@ -130,3 +131,34 @@ class ImageAnalysisPipelineTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result["image_analysis"], [])
         image_mock.assert_not_awaited()
 
+
+class ContentExtractorImageFilteringTests(unittest.TestCase):
+    def test_placeholder_images_are_skipped(self):
+        html = """
+        <html>
+          <head><title>Mock Title</title></head>
+          <body>
+            <img src="https://static.example.com/grey-placeholder.png" width="1200" height="800" />
+            <img src="/images/real-photo.jpg" alt="Real article image" width="1200" height="800" />
+          </body>
+        </html>
+        """
+
+        class MockResponse:
+            status_code = 200
+            headers = {"Content-Type": "text/html"}
+            text = html
+
+            def raise_for_status(self):
+                return None
+
+        with patch.object(content_extractor.httpx, "get", return_value=MockResponse()):
+            with patch.object(
+                content_extractor.trafilatura,
+                "extract",
+                return_value="Mock extracted article text with enough content.",
+            ):
+                result = content_extractor.extract_from_url("https://example.com/story")
+
+        self.assertEqual(len(result["images"]), 1)
+        self.assertEqual(result["images"][0]["url"], "https://example.com/images/real-photo.jpg")

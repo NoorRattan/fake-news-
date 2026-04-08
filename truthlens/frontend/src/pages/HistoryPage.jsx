@@ -9,6 +9,7 @@ import { useAnalysis } from '../context/AnalysisContext';
 import { clearServerHistory, getServerHistory } from '../services/api';
 import PageTransition from '../components/PageTransition';
 import HistoryCard from '../components/HistoryCard';
+import { normalizeAnalysisResult } from '../utils/helpers';
 
 export default function HistoryPage() {
   const { history, clearHistory, setCurrentResult } = useAnalysis();
@@ -28,7 +29,7 @@ export default function HistoryPage() {
     try {
       const data = await getServerHistory();
       if (Array.isArray(data)) {
-        setServerHistory(data);
+        setServerHistory(data.map(normalizeAnalysisResult));
       }
     } catch (e) {
       // Silent fail for server history as requested
@@ -213,7 +214,7 @@ export default function HistoryPage() {
                         <HistoryCard 
                           item={item} 
                           onClick={() => {
-                            setCurrentResult(item);
+                            setCurrentResult(normalizeAnalysisResult(item));
                             navigate("/");
                           }} 
                         />

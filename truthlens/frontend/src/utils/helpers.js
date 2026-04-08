@@ -1,5 +1,24 @@
 import { format } from 'date-fns';
 
+export function normalizeAnalysisResult(result) {
+  if (!result || typeof result !== 'object') {
+    return result;
+  }
+
+  return {
+    ...result,
+    red_flags: Array.isArray(result.red_flags) ? result.red_flags : [],
+    credible_signals: Array.isArray(result.credible_signals) ? result.credible_signals : [],
+    manipulation_tactics: Array.isArray(result.manipulation_tactics) ? result.manipulation_tactics : [],
+    key_claims: Array.isArray(result.key_claims) ? result.key_claims : [],
+    cited_sources: Array.isArray(result.cited_sources) ? result.cited_sources : [],
+    corroboration_results: Array.isArray(result.corroboration_results)
+      ? result.corroboration_results
+      : [],
+    image_analysis: Array.isArray(result.image_analysis) ? result.image_analysis : [],
+  };
+}
+
 function formatList(items, fallback = 'None detected') {
   if (!Array.isArray(items) || items.length === 0) {
     return fallback;

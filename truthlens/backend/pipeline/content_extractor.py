@@ -31,6 +31,14 @@ def _normalize_image_url(src: str, base_origin: str) -> str:
     return urllib.parse.urljoin(f"{base_origin}/", src)
 
 
+def _is_placeholder_image(image_url: str) -> bool:
+    lowered_url = image_url.lower()
+    return any(
+        keyword in lowered_url
+        for keyword in ("placeholder", "spacer", "pixel", "blank.")
+    )
+
+
 def extract_from_url(url: str) -> dict:
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -87,7 +95,11 @@ def extract_from_url(url: str) -> dict:
                 continue
 
             image_url = _normalize_image_url(image_src, base_origin)
-            if not image_url.startswith("http") or image_url in seen_urls:
+            if (
+                not image_url.startswith("http")
+                or image_url in seen_urls
+                or _is_placeholder_image(image_url)
+            ):
                 continue
 
             images.append(
